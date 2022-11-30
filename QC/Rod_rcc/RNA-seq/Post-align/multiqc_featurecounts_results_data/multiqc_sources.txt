@@ -1,9 +1,0 @@
-Module	Section	Sample Name	Source
-featureCounts	all_sections	RNA-Seq_786-M1A-1	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_786-M1A-2	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_786-O-1	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_786-O-2	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_OS-LM1-1	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_OS-LM1-2	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_OS-RC2_TGL-1	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
-featureCounts	all_sections	RNA-Seq_OS-RC2_TGL-2	/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary
