@@ -1,0 +1,26 @@
+java -ea -Xmx4183m -Xms4183m -cp /home/sk_ounce/mambaforge/opt/bbmap-39.01-0/current/ jgi.BBDuk in1=HPNE_CTCF_ChIP-seq_1_1.fastq in2=HPNE_CTCF_ChIP-seq_1_2.fastq out1=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/HPNE_CTCF_ChIP-seq_1_1_trimmed.fastq out2=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/HPNE_CTCF_ChIP-seq_1_2_trimmed.fastq ktrim=r k=23 mink=11 hdist=1 tpe tbo ref=/home/sk_ounce/bbmap/resources/adapters.fa qtrim=rl trimq=15 minlen=20
+Executing jgi.BBDuk [in1=HPNE_CTCF_ChIP-seq_1_1.fastq, in2=HPNE_CTCF_ChIP-seq_1_2.fastq, out1=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/HPNE_CTCF_ChIP-seq_1_1_trimmed.fastq, out2=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/HPNE_CTCF_ChIP-seq_1_2_trimmed.fastq, ktrim=r, k=23, mink=11, hdist=1, tpe, tbo, ref=/home/sk_ounce/bbmap/resources/adapters.fa, qtrim=rl, trimq=15, minlen=20]
+Version 39.01
+
+maskMiddle was disabled because useShortKmers=true
+0.012 seconds.
+Initial:
+Memory: max=4204m, total=4204m, free=4117m, used=87m
+
+Added 217135 kmers; time: 	0.064 seconds.
+Memory: max=4204m, total=4204m, free=4007m, used=197m
+
+Input is being processed as paired
+Started output streams:	0.091 seconds.
+Processing time:   		245.781 seconds.
+
+Input:                  	37079802 reads 		1853990100 bases.
+QTrimmed:               	2256666 reads (6.09%) 	20931852 bases (1.13%)
+KTrimmed:               	58536 reads (0.16%) 	1491558 bases (0.08%)
+Trimmed by overlap:     	6758 reads (0.02%) 	34598 bases (0.00%)
+Total Removed:          	280154 reads (0.76%) 	22458008 bases (1.21%)
+Result:                 	36799648 reads (99.24%) 	1831532092 bases (98.79%)
+
+Time:                         	245.950 seconds.
+Reads Processed:      37079k 	150.76k reads/sec
+Bases Processed:       1853m 	7.54m bases/sec

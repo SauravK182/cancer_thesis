@@ -1,0 +1,21 @@
+[2022-11-26 12:43:07,332] multiqc                                            [DEBUG  ]  This is MultiQC v1.13
+[2022-11-26 12:43:07,333] multiqc                                            [DEBUG  ]  Command used: /home/sk_ounce/anaconda3/bin/multiqc --module samtools -o /home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Post-align/ -n multiqc_alignment_results .
+[2022-11-26 12:43:08,069] multiqc                                            [DEBUG  ]  Latest MultiQC version is v1.13
+[2022-11-26 12:43:08,069] multiqc                                            [DEBUG  ]  Working dir : /mnt/d/SK/data/ren-panc/chip-seq/aligned
+[2022-11-26 12:43:08,069] multiqc                                            [DEBUG  ]  Template    : default
+[2022-11-26 12:43:08,069] multiqc                                            [DEBUG  ]  Running Python 3.9.12 (main, Apr  5 2022, 06:56:58)  [GCC 7.5.0]
+[2022-11-26 12:43:08,069] multiqc                                            [INFO   ]  Only using modules: samtools
+[2022-11-26 12:43:08,070] multiqc                                            [DEBUG  ]  Analysing modules: samtools
+[2022-11-26 12:43:08,070] multiqc                                            [DEBUG  ]  Using temporary directory for creating report: /tmp/tmpzv4mxh0m
+[2022-11-26 12:43:08,176] multiqc                                            [INFO   ]  Search path : /mnt/d/SK/data/ren-panc/chip-seq/aligned
+[2022-11-26 12:43:08,176] multiqc                                            [DEBUG  ]  Ignored 276 search patterns as didn't match running modules.
+[2022-11-26 12:43:09,828] multiqc                                            [DEBUG  ]  Summary of files that were skipped by the search: [skipped_ignore_pattern: 15] // [skipped_no_match: 15]
+[2022-11-26 12:43:10,476] multiqc.plots.bargraph                             [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-26 12:43:10,477] multiqc.plots.linegraph                            [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-26 12:43:10,540] multiqc.modules.samtools.samtools                  [INFO   ]  Found 15 stats reports
+[2022-11-26 12:43:10,581] multiqc.modules.samtools.samtools                  [INFO   ]  Found 15 flagstat reports
+[2022-11-26 12:43:10,606] multiqc                                            [INFO   ]  Compressing plot data
+[2022-11-26 12:43:10,659] multiqc                                            [INFO   ]  Report      : ../../../../../../../home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Post-align/multiqc_alignment_results.html
+[2022-11-26 12:43:10,659] multiqc                                            [INFO   ]  Data        : ../../../../../../../home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Post-align/multiqc_alignment_results_data
+[2022-11-26 12:43:10,659] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpzv4mxh0m/multiqc_data' to '/home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Post-align/multiqc_alignment_results_data'
+[2022-11-26 12:43:10,934] multiqc                                            [INFO   ]  MultiQC complete

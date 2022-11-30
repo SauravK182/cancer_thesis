@@ -1,0 +1,25 @@
+java -ea -Xmx4183m -Xms4183m -cp /home/sk_ounce/mambaforge/opt/bbmap-39.01-0/current/ jgi.BBDuk in=786-M1A-k27ac-2.fastq out=/mnt/d/SK/data/rod-rcc/chip-seq/trimmed/786-M1A-k27ac-2_trimmed.fastq ktrim=r k=23 mink=11 hdist=1 ref=/home/sk_ounce/bbmap/resources/adapters.fa qtrim=rl trimq=15 minlen=20
+Executing jgi.BBDuk [in=786-M1A-k27ac-2.fastq, out=/mnt/d/SK/data/rod-rcc/chip-seq/trimmed/786-M1A-k27ac-2_trimmed.fastq, ktrim=r, k=23, mink=11, hdist=1, ref=/home/sk_ounce/bbmap/resources/adapters.fa, qtrim=rl, trimq=15, minlen=20]
+Version 39.01
+
+maskMiddle was disabled because useShortKmers=true
+0.017 seconds.
+Initial:
+Memory: max=4204m, total=4204m, free=4117m, used=87m
+
+Added 217135 kmers; time: 	0.083 seconds.
+Memory: max=4204m, total=4204m, free=3963m, used=241m
+
+Input is being processed as unpaired
+Started output streams:	0.012 seconds.
+Processing time:   		595.853 seconds.
+
+Input:                  	56555071 reads 		2771198479 bases.
+QTrimmed:               	4118682 reads (7.28%) 	19487368 bases (0.70%)
+KTrimmed:               	31100 reads (0.05%) 	369779 bases (0.01%)
+Total Removed:          	23660 reads (0.04%) 	19857147 bases (0.72%)
+Result:                 	56531411 reads (99.96%) 	2751341332 bases (99.28%)
+
+Time:                         	595.959 seconds.
+Reads Processed:      56555k 	94.90k reads/sec
+Bases Processed:       2771m 	4.65m bases/sec

@@ -1,0 +1,24 @@
+[2022-11-20 10:53:55,884] multiqc                                            [DEBUG  ]  This is MultiQC v1.13
+[2022-11-20 10:53:55,886] multiqc                                            [DEBUG  ]  Loading config settings from: /home/sk_ounce/multiqc_configs/multiqc_config.yaml
+[2022-11-20 10:53:55,887] multiqc                                            [DEBUG  ]  New config: {'module_order': [{'fastqc': {'name': 'FastQC (raw)', 'path_filters': ['*_fastqc.zip'], 'path_filters_exclude': ['*_trimmed_fastqc.zip']}}, 'bbmap', {'fastqc': {'name': 'FastQC (trimmed)', 'info': 'This section of the report shows FastQC results after adapter trimming.', 'target': '', 'path_filters': ['*_trimmed_fastqc.zip']}}, 'hisat2', 'bowtie2', 'rna_seqc', 'sambamba', 'samtools', 'featureCounts', 'homer', 'macs2']}
+[2022-11-20 10:53:55,887] multiqc                                            [DEBUG  ]  Command used: /home/sk_ounce/anaconda3/bin/multiqc --module hisat2 --module rna_seqc -o /home/sk_ounce/project/QC/Ren_2021/RNA-seq/Post-align/ -n multiqc_alignment_results -c /home/sk_ounce/multiqc_configs/multiqc_config.yaml /mnt/d/SK/data/ren-panc/rna-seq/aligned/ /home/sk_ounce/project/QC/Ren_2021/RNA-seq/Post-align/
+[2022-11-20 10:53:56,527] multiqc                                            [DEBUG  ]  Latest MultiQC version is v1.13
+[2022-11-20 10:53:56,527] multiqc                                            [DEBUG  ]  Working dir : /mnt/c/Users/jvons/Documents/NCF/Thesis/scripts/ren-panc
+[2022-11-20 10:53:56,527] multiqc                                            [DEBUG  ]  Template    : default
+[2022-11-20 10:53:56,527] multiqc                                            [DEBUG  ]  Running Python 3.9.12 (main, Apr  5 2022, 06:56:58)  [GCC 7.5.0]
+[2022-11-20 10:53:56,527] multiqc                                            [INFO   ]  Only using modules: hisat2, rna_seqc
+[2022-11-20 10:53:56,527] multiqc                                            [DEBUG  ]  Analysing modules: hisat2, rna_seqc
+[2022-11-20 10:53:56,527] multiqc                                            [DEBUG  ]  Using temporary directory for creating report: /tmp/tmp1e8uff_j
+[2022-11-20 10:53:56,616] multiqc                                            [INFO   ]  Search path : /mnt/d/SK/data/ren-panc/rna-seq/aligned
+[2022-11-20 10:53:56,616] multiqc                                            [INFO   ]  Search path : /home/sk_ounce/project/QC/Ren_2021/RNA-seq/Post-align
+[2022-11-20 10:53:56,616] multiqc                                            [DEBUG  ]  Ignored 275 search patterns as didn't match running modules.
+[2022-11-20 10:54:02,073] multiqc                                            [DEBUG  ]  Summary of files that were skipped by the search: [skipped_no_match: 47] // [skipped_filesize_limit: 10] // [skipped_ignore_pattern: 9]
+[2022-11-20 10:54:02,523] multiqc.plots.bargraph                             [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-20 10:54:02,614] multiqc.modules.hisat2.hisat2                      [INFO   ]  Found 9 reports
+[2022-11-20 10:54:02,621] multiqc.plots.linegraph                            [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-20 10:54:02,684] multiqc.modules.rna_seqc.rna_seqc                  [INFO   ]  Found 9 samples
+[2022-11-20 10:54:02,693] multiqc                                            [INFO   ]  Compressing plot data
+[2022-11-20 10:54:02,718] multiqc                                            [INFO   ]  Report      : ../../../../../../../../../home/sk_ounce/project/QC/Ren_2021/RNA-seq/Post-align/multiqc_alignment_results.html
+[2022-11-20 10:54:02,718] multiqc                                            [INFO   ]  Data        : ../../../../../../../../../home/sk_ounce/project/QC/Ren_2021/RNA-seq/Post-align/multiqc_alignment_results_data
+[2022-11-20 10:54:02,718] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmp1e8uff_j/multiqc_data' to '/home/sk_ounce/project/QC/Ren_2021/RNA-seq/Post-align/multiqc_alignment_results_data'
+[2022-11-20 10:54:02,925] multiqc                                            [INFO   ]  MultiQC complete

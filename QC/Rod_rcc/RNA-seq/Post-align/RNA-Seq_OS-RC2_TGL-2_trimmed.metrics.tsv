@@ -1,0 +1,79 @@
+Sample	RNA-Seq_OS-RC2_TGL-2_trimmed
+Mapping Rate	0.990275
+Unique Rate of Mapped	1
+Duplicate Rate of Mapped	0
+Duplicate Rate of Mapped, excluding Globins	0
+Base Mismatch	0.00101973
+End 1 Mapping Rate	0
+End 2 Mapping Rate	0
+End 1 Mismatch Rate	-nan
+End 2 Mismatch Rate	-nan
+Expression Profiling Efficiency	0.810008
+High Quality Rate	0
+Exonic Rate	0.817962
+Intronic Rate	0.118259
+Intergenic Rate	0.0401015
+Intragenic Rate	0.936222
+Ambiguous Alignment Rate	0.0236769
+High Quality Exonic Rate	-nan
+High Quality Intronic Rate	-nan
+High Quality Intergenic Rate	-nan
+High Quality Intragenic Rate	-nan
+High Quality Ambiguous Alignment Rate	-nan
+Discard Rate	0
+rRNA Rate	0.00534794
+Chimeric Alignment Rate	0
+End 1 Sense Rate	-nan
+End 2 Sense Rate	-nan
+Avg. Splits per Read	0.150946
+Alternative Alignments	3624490
+Chimeric Reads	0
+Duplicate Reads	0
+End 1 Antisense	0
+End 2 Antisense	0
+End 1 Bases	0
+End 2 Bases	0
+End 1 Mapped Reads	0
+End 2 Mapped Reads	0
+End 1 Mismatches	0
+End 2 Mismatches	0
+End 1 Sense	0
+End 2 Sense	0
+Exonic Reads	13708051
+Failed Vendor QC	0
+High Quality Reads	0
+Intergenic Reads	672053
+Intragenic Reads	15689930
+Ambiguous Reads	396796
+Intronic Reads	1981879
+Low Mapping Quality	16923363
+Low Quality Reads	16758779
+Mapped Duplicate Reads	0
+Mapped Reads	16758779
+Mapped Unique Reads	16758779
+Mismatched Bases	853455
+Non-Globin Reads	16758757
+Non-Globin Duplicate Reads	0
+Reads excluded from exon counts	0
+Reads used for Intron/Exon counts	16758779
+rRNA Reads	89625
+Total Bases	836945044
+Total Mapped Pairs	0
+Total Reads	20547853
+Unique Mapping, Vendor QC Passed Reads	16923363
+Unpaired Reads	16923363
+Read Length	50
+Genes Detected	0
+Estimated Library Complexity	0
+Genes used in 3' bias	0
+Mean 3' bias	0
+Median 3' bias	0
+3' bias Std	0
+3' bias MAD_Std	0
+3' Bias, 25th Percentile	0
+3' Bias, 75th Percentile	0
+Median of Avg Transcript Coverage	0
+Median of Transcript Coverage Std	0
+Median of Transcript Coverage CV	0
+Median Exon CV	0
+Exon CV MAD	0

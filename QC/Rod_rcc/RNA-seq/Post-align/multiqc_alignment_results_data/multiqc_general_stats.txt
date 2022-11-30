@@ -1,0 +1,17 @@
+Sample	HISAT2_mqc-generalstats-hisat2-overall_alignment_rate	RNA-SeQC_mqc-generalstats-rna_seqc-Expression_Profiling_Efficiency	RNA-SeQC_mqc-generalstats-rna_seqc-Genes_Detected	RNA-SeQC_mqc-generalstats-rna_seqc-rRNA_rate
+RNA-Seq_786-M1A-1	98.6			
+RNA-Seq_786-M1A-1_trimmed		0.835218	0.0	0.0103953
+RNA-Seq_786-M1A-2	98.63			
+RNA-Seq_786-M1A-2_trimmed		0.838853	0.0	0.00728756
+RNA-Seq_786-O-1	98.74			
+RNA-Seq_786-O-1_trimmed		0.834077	0.0	0.00896393
+RNA-Seq_786-O-2	98.68			
+RNA-Seq_786-O-2_trimmed		0.823314	0.0	0.00975057
+RNA-Seq_OS-LM1-1	99.0			
+RNA-Seq_OS-LM1-1_trimmed		0.806627	0.0	0.0119199
+RNA-Seq_OS-LM1-2	98.87			
+RNA-Seq_OS-LM1-2_trimmed		0.778905	0.0	0.0154691
+RNA-Seq_OS-RC2_TGL-1	99.02			
+RNA-Seq_OS-RC2_TGL-1_trimmed		0.805874	0.0	0.0100139
+RNA-Seq_OS-RC2_TGL-2	99.03			
+RNA-Seq_OS-RC2_TGL-2_trimmed		0.810008	0.0	0.00534794

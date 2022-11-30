@@ -1,0 +1,19 @@
+[2022-11-25 08:31:23,872] multiqc                                            [DEBUG  ]  This is MultiQC v1.13
+[2022-11-25 08:31:23,874] multiqc                                            [DEBUG  ]  Command used: /home/sk_ounce/anaconda3/bin/multiqc --module featureCounts -o /home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Post-align/ -n multiqc_featurecounts_results /mnt/d/SK/data/rod-rcc/rna-seq/aligned/
+[2022-11-25 08:31:24,620] multiqc                                            [DEBUG  ]  Latest MultiQC version is v1.13
+[2022-11-25 08:31:24,620] multiqc                                            [DEBUG  ]  Working dir : /mnt/d/SK/data/rod-rcc/rna-seq/aligned
+[2022-11-25 08:31:24,620] multiqc                                            [DEBUG  ]  Template    : default
+[2022-11-25 08:31:24,620] multiqc                                            [DEBUG  ]  Running Python 3.9.12 (main, Apr  5 2022, 06:56:58)  [GCC 7.5.0]
+[2022-11-25 08:31:24,621] multiqc                                            [INFO   ]  Only using modules: featureCounts
+[2022-11-25 08:31:24,621] multiqc                                            [DEBUG  ]  Analysing modules: featureCounts
+[2022-11-25 08:31:24,621] multiqc                                            [DEBUG  ]  Using temporary directory for creating report: /tmp/tmpp9k6vvnu
+[2022-11-25 08:31:24,704] multiqc                                            [INFO   ]  Search path : /mnt/d/SK/data/rod-rcc/rna-seq/aligned
+[2022-11-25 08:31:24,704] multiqc                                            [DEBUG  ]  Ignored 279 search patterns as didn't match running modules.
+[2022-11-25 08:31:24,745] multiqc                                            [DEBUG  ]  Summary of files that were skipped by the search: [skipped_no_match: 17] // [skipped_ignore_pattern: 8] // [skipped_filesize_limit: 1]
+[2022-11-25 08:31:25,194] multiqc.plots.bargraph                             [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-25 08:31:25,238] multiqc.modules.featureCounts.feature_counts       [INFO   ]  Found 8 reports
+[2022-11-25 08:31:25,253] multiqc                                            [INFO   ]  Compressing plot data
+[2022-11-25 08:31:25,269] multiqc                                            [INFO   ]  Report      : ../../../../../../../home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Post-align/multiqc_featurecounts_results.html
+[2022-11-25 08:31:25,269] multiqc                                            [INFO   ]  Data        : ../../../../../../../home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Post-align/multiqc_featurecounts_results_data
+[2022-11-25 08:31:25,269] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmpp9k6vvnu/multiqc_data' to '/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Post-align/multiqc_featurecounts_results_data'
+[2022-11-25 08:31:25,421] multiqc                                            [INFO   ]  MultiQC complete

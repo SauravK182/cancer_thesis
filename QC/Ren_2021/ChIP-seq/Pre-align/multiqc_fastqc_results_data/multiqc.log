@@ -1,0 +1,20 @@
+[2022-11-14 02:02:16,717] multiqc                                            [DEBUG  ]  This is MultiQC v1.13
+[2022-11-14 02:02:16,718] multiqc                                            [DEBUG  ]  Command used: /home/sk_ounce/anaconda3/bin/multiqc --module fastqc --force --outdir /home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Pre-align/ -n multiqc_fastqc_results /home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Pre-align/
+[2022-11-14 02:02:19,458] multiqc                                            [DEBUG  ]  Latest MultiQC version is v1.13
+[2022-11-14 02:02:19,458] multiqc                                            [DEBUG  ]  Working dir : /mnt/c/Users/jvons/Documents/NCF/Thesis/scripts/chip-seq
+[2022-11-14 02:02:19,458] multiqc                                            [DEBUG  ]  Template    : default
+[2022-11-14 02:02:19,458] multiqc                                            [DEBUG  ]  Running Python 3.9.12 (main, Apr  5 2022, 06:56:58)  [GCC 7.5.0]
+[2022-11-14 02:02:19,459] multiqc                                            [INFO   ]  Only using modules: fastqc
+[2022-11-14 02:02:19,459] multiqc                                            [DEBUG  ]  Analysing modules: fastqc
+[2022-11-14 02:02:19,459] multiqc                                            [DEBUG  ]  Using temporary directory for creating report: /tmp/tmp7qabkd0r
+[2022-11-14 02:02:19,579] multiqc                                            [INFO   ]  Search path : /home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Pre-align
+[2022-11-14 02:02:19,579] multiqc                                            [DEBUG  ]  Ignored 277 search patterns as didn't match running modules.
+[2022-11-14 02:02:19,935] multiqc                                            [DEBUG  ]  Summary of files that were skipped by the search: [skipped_no_match: 30]
+[2022-11-14 02:02:20,508] multiqc.plots.linegraph                            [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-14 02:02:20,509] multiqc.plots.bargraph                             [DEBUG  ]  Using matplotlib version 3.5.1
+[2022-11-14 02:02:20,753] multiqc.modules.fastqc.fastqc                      [INFO   ]  Found 30 reports
+[2022-11-14 02:02:20,916] multiqc                                            [INFO   ]  Compressing plot data
+[2022-11-14 02:02:21,181] multiqc                                            [INFO   ]  Report      : ../../../../../../../../../home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Pre-align/multiqc_fastqc_results.html
+[2022-11-14 02:02:21,181] multiqc                                            [INFO   ]  Data        : ../../../../../../../../../home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Pre-align/multiqc_fastqc_results_data
+[2022-11-14 02:02:21,181] multiqc                                            [DEBUG  ]  Moving data file from '/tmp/tmp7qabkd0r/multiqc_data' to '/home/sk_ounce/project/QC/Ren_2021/ChIP-seq/Pre-align/multiqc_fastqc_results_data'
+[2022-11-14 02:02:21,392] multiqc                                            [INFO   ]  MultiQC complete

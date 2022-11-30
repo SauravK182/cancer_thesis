@@ -1,0 +1,9 @@
+Sample	Filename	File type	Encoding	Total Sequences	Sequences flagged as poor quality	Sequence length	%GC	total_deduplicated_percentage	avg_sequence_length	basic_statistics	per_base_sequence_quality	per_sequence_quality_scores	per_base_sequence_content	per_sequence_gc_content	per_base_n_content	sequence_length_distribution	sequence_duplication_levels	overrepresented_sequences	adapter_content	per_tile_sequence_quality
+RNA-Seq_786-M1A-1	RNA-Seq_786-M1A-1.fastq	Conventional base calls	Sanger / Illumina 1.9	62153359.0	0.0	50.0	48.0	27.444007991288593	50.0	pass	pass	pass	fail	pass	pass	pass	fail	warn	pass	
+RNA-Seq_786-M1A-2	RNA-Seq_786-M1A-2.fastq	Conventional base calls	Sanger / Illumina 1.9	57433581.0	0.0	50.0	47.0	27.508441080780255	50.0	pass	pass	pass	fail	pass	pass	pass	fail	warn	pass	
+RNA-Seq_786-O-1	RNA-Seq_786-O-1.fastq	Conventional base calls	Sanger / Illumina 1.9	47673943.0	0.0	50.0	48.0	28.766690742855594	50.0	pass	pass	pass	fail	pass	pass	pass	fail	warn	pass	
+RNA-Seq_786-O-2	RNA-Seq_786-O-2.fastq	Conventional base calls	Sanger / Illumina 1.9	51866435.0	0.0	50.0	47.0	30.837388871109685	50.0	pass	pass	pass	fail	pass	pass	pass	fail	warn	pass	
+RNA-Seq_OS-LM1-1	RNA-Seq_OS-LM1-1.fastq	Conventional base calls	Sanger / Illumina 1.9	33051807.0	0.0	50.0	48.0	39.28962938459218	50.0	pass	pass	pass	fail	pass	pass	pass	fail	pass	pass	pass
+RNA-Seq_OS-LM1-2	RNA-Seq_OS-LM1-2.fastq	Conventional base calls	Sanger / Illumina 1.9	20870190.0	0.0	50.0	48.0	45.343832831087184	50.0	pass	pass	pass	fail	pass	pass	pass	fail	pass	pass	pass
+RNA-Seq_OS-RC2_TGL-1	RNA-Seq_OS-RC2_TGL-1.fastq	Conventional base calls	Sanger / Illumina 1.9	14966880.0	0.0	50.0	48.0	50.11226987706424	50.0	pass	pass	pass	fail	pass	pass	pass	warn	pass	pass	pass
+RNA-Seq_OS-RC2_TGL-2	RNA-Seq_OS-RC2_TGL-2.fastq	Conventional base calls	Sanger / Illumina 1.9	16944495.0	0.0	50.0	47.0	50.09435877200682	50.0	pass	pass	pass	fail	pass	pass	pass	warn	pass	pass	pass

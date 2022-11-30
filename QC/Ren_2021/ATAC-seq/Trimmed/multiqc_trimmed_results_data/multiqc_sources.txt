@@ -1,0 +1,13 @@
+Module	Section	Sample Name	Source
+FastQC	all_sections	Capan-1_ATAC-seq_1_1	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/Capan-1_ATAC-seq_1_1_trimmed_fastqc.zip
+FastQC	all_sections	Capan-1_ATAC-seq_1_2	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/Capan-1_ATAC-seq_1_2_trimmed_fastqc.zip
+FastQC	all_sections	Capan-1_ATAC-seq_2_1	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/Capan-1_ATAC-seq_2_1_trimmed_fastqc.zip
+FastQC	all_sections	Capan-1_ATAC-seq_2_2	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/Capan-1_ATAC-seq_2_2_trimmed_fastqc.zip
+FastQC	all_sections	HPNE_ATAC-seq_1_1	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/HPNE_ATAC-seq_1_1_trimmed_fastqc.zip
+FastQC	all_sections	HPNE_ATAC-seq_1_2	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/HPNE_ATAC-seq_1_2_trimmed_fastqc.zip
+FastQC	all_sections	HPNE_ATAC-seq_2_1	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/HPNE_ATAC-seq_2_1_trimmed_fastqc.zip
+FastQC	all_sections	HPNE_ATAC-seq_2_2	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/HPNE_ATAC-seq_2_2_trimmed_fastqc.zip
+FastQC	all_sections	PANC-1_ATAC-seq_1_1	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/PANC-1_ATAC-seq_1_1_trimmed_fastqc.zip
+FastQC	all_sections	PANC-1_ATAC-seq_1_2	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/PANC-1_ATAC-seq_1_2_trimmed_fastqc.zip
+FastQC	all_sections	PANC-1_ATAC-seq_2_1	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/PANC-1_ATAC-seq_2_1_trimmed_fastqc.zip
+FastQC	all_sections	PANC-1_ATAC-seq_2_2	/home/sk_ounce/project/QC/Ren_2021/ATAC-seq/Trimmed/PANC-1_ATAC-seq_2_2_trimmed_fastqc.zip

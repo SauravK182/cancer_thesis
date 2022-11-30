@@ -1,0 +1,500 @@
+{
+    "report_data_sources": {
+        "featureCounts": {
+            "all_sections": {
+                "RNA-Seq_786-M1A-1": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_786-M1A-2": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_786-O-1": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_786-O-2": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_OS-LM1-1": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_OS-LM1-2": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_OS-RC2_TGL-1": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary",
+                "RNA-Seq_OS-RC2_TGL-2": "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/rod_rcc_rna_rawcounts.txt.summary"
+            }
+        }
+    },
+    "report_general_stats_data": [
+        {
+            "RNA-Seq_786-M1A-1": {
+                "Total": 76124981,
+                "Assigned": 48482323,
+                "Unassigned_Unmapped": 866105,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 20041523,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3821721,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2913309,
+                "percent_assigned": 63.68779651977844
+            },
+            "RNA-Seq_786-M1A-2": {
+                "Total": 70113983,
+                "Assigned": 45217880,
+                "Unassigned_Unmapped": 786741,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 17887252,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3561815,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2660295,
+                "percent_assigned": 64.49195733182067
+            },
+            "RNA-Seq_786-O-1": {
+                "Total": 57975960,
+                "Assigned": 37167510,
+                "Unassigned_Unmapped": 602029,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 14803712,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3156110,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2246599,
+                "percent_assigned": 64.10848565508877
+            },
+            "RNA-Seq_786-O-2": {
+                "Total": 63575474,
+                "Assigned": 39785921,
+                "Unassigned_Unmapped": 682117,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 16843100,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3902129,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2362207,
+                "percent_assigned": 62.58061245441914
+            },
+            "RNA-Seq_OS-LM1-1": {
+                "Total": 40529941,
+                "Assigned": 24606484,
+                "Unassigned_Unmapped": 329032,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 11108764,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 2830162,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 1655499,
+                "percent_assigned": 60.71186730817101
+            },
+            "RNA-Seq_OS-LM1-2": {
+                "Total": 26212143,
+                "Assigned": 14869237,
+                "Unassigned_Unmapped": 234871,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 7978415,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 2027412,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 1102208,
+                "percent_assigned": 56.72652174986227
+            },
+            "RNA-Seq_OS-RC2_TGL-1": {
+                "Total": 18378014,
+                "Assigned": 11124322,
+                "Unassigned_Unmapped": 146287,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 5073258,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 1300551,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 733596,
+                "percent_assigned": 60.530599225792294
+            },
+            "RNA-Seq_OS-RC2_TGL-2": {
+                "Total": 20547853,
+                "Assigned": 12819648,
+                "Unassigned_Unmapped": 164584,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 5279555,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 1448502,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 835564,
+                "percent_assigned": 62.389233561287405
+            }
+        }
+    ],
+    "report_general_stats_headers": [
+        {
+            "percent_assigned": {
+                "title": "% Assigned",
+                "description": "% Assigned reads",
+                "max": 100,
+                "min": 0,
+                "suffix": "%",
+                "scale": "RdYlGn",
+                "namespace": "featureCounts",
+                "rid": "mqc-generalstats-featurecounts-percent_assigned",
+                "format": "{:,.1f}",
+                "colour": "55,126,184",
+                "hidden": null,
+                "ceiling": null,
+                "floor": null,
+                "minRange": null,
+                "shared_key": null,
+                "modify": null,
+                "placement": 1000.0,
+                "dmax": 100.0,
+                "dmin": 0.0
+            },
+            "Assigned": {
+                "title": "M Assigned",
+                "description": "Assigned reads (millions)",
+                "min": 0,
+                "scale": "PuBu",
+                "modify": 1e-06,
+                "shared_key": "read_count",
+                "namespace": "featureCounts",
+                "rid": "mqc-generalstats-featurecounts-Assigned",
+                "format": "{:,.1f}",
+                "colour": "55,126,184",
+                "hidden": null,
+                "max": null,
+                "ceiling": null,
+                "floor": null,
+                "minRange": null,
+                "placement": 1000.0,
+                "dmax": 48.482323,
+                "dmin": 0.0
+            }
+        }
+    ],
+    "report_multiqc_command": "/home/sk_ounce/anaconda3/bin/multiqc --module featureCounts -o /home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Post-align/ -n multiqc_featurecounts_results /mnt/d/SK/data/rod-rcc/rna-seq/aligned/",
+    "report_plot_data": {
+        "featureCounts_assignment_plot": {
+            "plot_type": "bar_graph",
+            "samples": [
+                [
+                    "RNA-Seq_786-M1A-1",
+                    "RNA-Seq_786-M1A-2",
+                    "RNA-Seq_786-O-1",
+                    "RNA-Seq_786-O-2",
+                    "RNA-Seq_OS-LM1-1",
+                    "RNA-Seq_OS-LM1-2",
+                    "RNA-Seq_OS-RC2_TGL-1",
+                    "RNA-Seq_OS-RC2_TGL-2"
+                ]
+            ],
+            "datasets": [
+                [
+                    {
+                        "name": "Assigned",
+                        "data": [
+                            48482323.0,
+                            45217880.0,
+                            37167510.0,
+                            39785921.0,
+                            24606484.0,
+                            14869237.0,
+                            11124322.0,
+                            12819648.0
+                        ]
+                    },
+                    {
+                        "name": "Unassigned: Unmapped",
+                        "data": [
+                            866105.0,
+                            786741.0,
+                            602029.0,
+                            682117.0,
+                            329032.0,
+                            234871.0,
+                            146287.0,
+                            164584.0
+                        ]
+                    },
+                    {
+                        "name": "Unassigned: Multi Mapping",
+                        "data": [
+                            20041523.0,
+                            17887252.0,
+                            14803712.0,
+                            16843100.0,
+                            11108764.0,
+                            7978415.0,
+                            5073258.0,
+                            5279555.0
+                        ]
+                    },
+                    {
+                        "name": "Unassigned: No Features",
+                        "data": [
+                            3821721.0,
+                            3561815.0,
+                            3156110.0,
+                            3902129.0,
+                            2830162.0,
+                            2027412.0,
+                            1300551.0,
+                            1448502.0
+                        ]
+                    },
+                    {
+                        "name": "Unassigned: Ambiguity",
+                        "data": [
+                            2913309.0,
+                            2660295.0,
+                            2246599.0,
+                            2362207.0,
+                            1655499.0,
+                            1102208.0,
+                            733596.0,
+                            835564.0
+                        ]
+                    }
+                ]
+            ],
+            "config": {
+                "id": "featureCounts_assignment_plot",
+                "title": "featureCounts: Assignments",
+                "ylab": "# Reads",
+                "cpswitch_counts_label": "Number of Reads"
+            }
+        }
+    },
+    "report_saved_raw_data": {
+        "multiqc_featureCounts": {
+            "RNA-Seq_786-M1A-1": {
+                "Total": 76124981,
+                "Assigned": 48482323,
+                "Unassigned_Unmapped": 866105,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 20041523,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3821721,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2913309,
+                "percent_assigned": 63.68779651977844
+            },
+            "RNA-Seq_786-M1A-2": {
+                "Total": 70113983,
+                "Assigned": 45217880,
+                "Unassigned_Unmapped": 786741,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 17887252,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3561815,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2660295,
+                "percent_assigned": 64.49195733182067
+            },
+            "RNA-Seq_786-O-1": {
+                "Total": 57975960,
+                "Assigned": 37167510,
+                "Unassigned_Unmapped": 602029,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 14803712,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3156110,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2246599,
+                "percent_assigned": 64.10848565508877
+            },
+            "RNA-Seq_786-O-2": {
+                "Total": 63575474,
+                "Assigned": 39785921,
+                "Unassigned_Unmapped": 682117,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 16843100,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 3902129,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 2362207,
+                "percent_assigned": 62.58061245441914
+            },
+            "RNA-Seq_OS-LM1-1": {
+                "Total": 40529941,
+                "Assigned": 24606484,
+                "Unassigned_Unmapped": 329032,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 11108764,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 2830162,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 1655499,
+                "percent_assigned": 60.71186730817101
+            },
+            "RNA-Seq_OS-LM1-2": {
+                "Total": 26212143,
+                "Assigned": 14869237,
+                "Unassigned_Unmapped": 234871,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 7978415,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 2027412,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 1102208,
+                "percent_assigned": 56.72652174986227
+            },
+            "RNA-Seq_OS-RC2_TGL-1": {
+                "Total": 18378014,
+                "Assigned": 11124322,
+                "Unassigned_Unmapped": 146287,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 5073258,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 1300551,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 733596,
+                "percent_assigned": 60.530599225792294
+            },
+            "RNA-Seq_OS-RC2_TGL-2": {
+                "Total": 20547853,
+                "Assigned": 12819648,
+                "Unassigned_Unmapped": 164584,
+                "Unassigned_Read_Type": 0,
+                "Unassigned_Singleton": 0,
+                "Unassigned_MappingQuality": 0,
+                "Unassigned_Chimera": 0,
+                "Unassigned_FragmentLength": 0,
+                "Unassigned_Duplicate": 0,
+                "Unassigned_MultiMapping": 5279555,
+                "Unassigned_Secondary": 0,
+                "Unassigned_NonSplit": 0,
+                "Unassigned_NoFeatures": 1448502,
+                "Unassigned_Overlapping_Length": 0,
+                "Unassigned_Ambiguity": 835564,
+                "percent_assigned": 62.389233561287405
+            }
+        },
+        "multiqc_general_stats": {
+            "RNA-Seq_786-M1A-1": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 63.68779651977844,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 48482323
+            },
+            "RNA-Seq_786-M1A-2": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 64.49195733182067,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 45217880
+            },
+            "RNA-Seq_786-O-1": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 64.10848565508877,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 37167510
+            },
+            "RNA-Seq_786-O-2": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 62.58061245441914,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 39785921
+            },
+            "RNA-Seq_OS-LM1-1": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 60.71186730817101,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 24606484
+            },
+            "RNA-Seq_OS-LM1-2": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 56.72652174986227,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 14869237
+            },
+            "RNA-Seq_OS-RC2_TGL-1": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 60.530599225792294,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 11124322
+            },
+            "RNA-Seq_OS-RC2_TGL-2": {
+                "featureCounts_mqc-generalstats-featurecounts-percent_assigned": 62.389233561287405,
+                "featureCounts_mqc-generalstats-featurecounts-Assigned": 12819648
+            }
+        }
+    },
+    "config_analysis_dir_abs": [
+        "/mnt/d/SK/data/rod-rcc/rna-seq/aligned"
+    ],
+    "config_analysis_dir": [
+        "/mnt/d/SK/data/rod-rcc/rna-seq/aligned/"
+    ],
+    "config_creation_date": "2022-11-25, 08:31 EST",
+    "config_git_hash": null,
+    "config_intro_text": null,
+    "config_report_comment": null,
+    "config_report_header_info": null,
+    "config_script_path": "/home/sk_ounce/anaconda3/lib/python3.9/site-packages/multiqc/utils",
+    "config_short_version": "1.13",
+    "config_subtitle": null,
+    "config_title": null,
+    "config_version": "1.13"
+}

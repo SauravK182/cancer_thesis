@@ -1,0 +1,9 @@
+Module	Section	Sample Name	Source
+FastQC (trimmed)	all_sections	RNA-Seq_786-M1A-1	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_786-M1A-1_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_786-M1A-2	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_786-M1A-2_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_786-O-1	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_786-O-1_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_786-O-2	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_786-O-2_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_OS-LM1-1	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_OS-LM1-1_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_OS-LM1-2	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_OS-LM1-2_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_OS-RC2_TGL-1	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_OS-RC2_TGL-1_trimmed_fastqc.zip
+FastQC (trimmed)	all_sections	RNA-Seq_OS-RC2_TGL-2	/home/sk_ounce/project/QC/Rod_rcc/RNA-seq/Trimmed/RNA-Seq_OS-RC2_TGL-2_trimmed_fastqc.zip

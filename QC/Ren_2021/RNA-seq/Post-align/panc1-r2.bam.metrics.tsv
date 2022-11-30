@@ -1,0 +1,79 @@
+Sample	panc1-r2.bam
+Mapping Rate	0.963826
+Unique Rate of Mapped	1
+Duplicate Rate of Mapped	0
+Duplicate Rate of Mapped, excluding Globins	0
+Base Mismatch	0.00240072
+End 1 Mapping Rate	0.972868
+End 2 Mapping Rate	0.954784
+End 1 Mismatch Rate	0.00184304
+End 2 Mismatch Rate	0.00296895
+Expression Profiling Efficiency	0.792427
+High Quality Rate	0
+Exonic Rate	0.822168
+Intronic Rate	0.0905976
+Intergenic Rate	0.0197229
+Intragenic Rate	0.912766
+Ambiguous Alignment Rate	0.0675114
+High Quality Exonic Rate	-nan
+High Quality Intronic Rate	-nan
+High Quality Intergenic Rate	-nan
+High Quality Intragenic Rate	-nan
+High Quality Ambiguous Alignment Rate	-nan
+Discard Rate	0
+rRNA Rate	0.00444421
+Chimeric Alignment Rate	0
+End 1 Sense Rate	0.501678
+End 2 Sense Rate	0.50229
+Avg. Splits per Read	0.582666
+Alternative Alignments	1918775
+Chimeric Reads	87326
+Duplicate Reads	0
+End 1 Antisense	10011588
+End 2 Antisense	9813745
+End 1 Bases	3311566350
+End 2 Bases	3250011300
+End 1 Mapped Reads	22077109
+End 2 Mapped Reads	21666742
+End 1 Mismatches	6103342
+End 2 Mismatches	9649137
+End 1 Sense	10079008
+End 2 Sense	9904053
+Exonic Reads	35964801
+Failed Vendor QC	0
+High Quality Reads	0
+Intergenic Reads	862756
+Intragenic Reads	39927887
+Ambiguous Reads	2953208
+Intronic Reads	3963086
+Low Mapping Quality	45385632
+Low Quality Reads	43743851
+Mapped Duplicate Reads	0
+Mapped Reads	43743851
+Mapped Unique Reads	43743851
+Mismatched Bases	15752479
+Non-Globin Reads	43743629
+Non-Globin Duplicate Reads	0
+Reads excluded from exon counts	0
+Reads used for Intron/Exon counts	43743851
+rRNA Reads	194407
+Total Bases	6561577650
+Total Mapped Pairs	21389265
+Total Reads	47304407
+Unique Mapping, Vendor QC Passed Reads	45385632
+Unpaired Reads	0
+Read Length	150
+Genes Detected	0
+Estimated Library Complexity	0
+Genes used in 3' bias	0
+Mean 3' bias	0
+Median 3' bias	0
+3' bias Std	0
+3' bias MAD_Std	0
+3' Bias, 25th Percentile	0
+3' Bias, 75th Percentile	0
+Median of Avg Transcript Coverage	0
+Median of Transcript Coverage Std	0
+Median of Transcript Coverage CV	0
+Median Exon CV	0
+Exon CV MAD	0

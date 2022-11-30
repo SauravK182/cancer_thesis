@@ -1,0 +1,25 @@
+java -ea -Xmx4183m -Xms4183m -cp /home/sk_ounce/mambaforge/opt/bbmap-39.01-0/current/ jgi.BBDuk in=RNA-Seq_786-O-2.fastq out=/mnt/d/SK/data/rod-rcc/rna-seq/trimmed/RNA-Seq_786-O-2_trimmed.fastq ktrim=r k=23 mink=11 hdist=1 ref=/home/sk_ounce/bbmap/resources/adapters.fa qtrim=rl trimq=15 minlen=20
+Executing jgi.BBDuk [in=RNA-Seq_786-O-2.fastq, out=/mnt/d/SK/data/rod-rcc/rna-seq/trimmed/RNA-Seq_786-O-2_trimmed.fastq, ktrim=r, k=23, mink=11, hdist=1, ref=/home/sk_ounce/bbmap/resources/adapters.fa, qtrim=rl, trimq=15, minlen=20]
+Version 39.01
+
+maskMiddle was disabled because useShortKmers=true
+0.016 seconds.
+Initial:
+Memory: max=4204m, total=4204m, free=4117m, used=87m
+
+Added 217135 kmers; time: 	0.072 seconds.
+Memory: max=4204m, total=4204m, free=3941m, used=263m
+
+Input is being processed as unpaired
+Started output streams:	0.017 seconds.
+Processing time:   		516.868 seconds.
+
+Input:                  	51866435 reads 		2593321750 bases.
+QTrimmed:               	3144693 reads (6.06%) 	10729197 bases (0.41%)
+KTrimmed:               	164804 reads (0.32%) 	6334004 bases (0.24%)
+Total Removed:          	114185 reads (0.22%) 	17063201 bases (0.66%)
+Result:                 	51752250 reads (99.78%) 	2576258549 bases (99.34%)
+
+Time:                         	516.970 seconds.
+Reads Processed:      51866k 	100.33k reads/sec
+Bases Processed:       2593m 	5.02m bases/sec

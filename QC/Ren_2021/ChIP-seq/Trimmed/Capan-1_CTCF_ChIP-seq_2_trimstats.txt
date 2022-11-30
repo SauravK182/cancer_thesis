@@ -1,0 +1,26 @@
+java -ea -Xmx4183m -Xms4183m -cp /home/sk_ounce/mambaforge/opt/bbmap-39.01-0/current/ jgi.BBDuk in1=Capan-1_CTCF_ChIP-seq_2_1.fastq in2=Capan-1_CTCF_ChIP-seq_2_2.fastq out1=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/Capan-1_CTCF_ChIP-seq_2_1_trimmed.fastq out2=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/Capan-1_CTCF_ChIP-seq_2_2_trimmed.fastq ktrim=r k=23 mink=11 hdist=1 tpe tbo ref=/home/sk_ounce/bbmap/resources/adapters.fa qtrim=rl trimq=15 minlen=20
+Executing jgi.BBDuk [in1=Capan-1_CTCF_ChIP-seq_2_1.fastq, in2=Capan-1_CTCF_ChIP-seq_2_2.fastq, out1=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/Capan-1_CTCF_ChIP-seq_2_1_trimmed.fastq, out2=/mnt/d/SK/data/ren-panc/chip-seq/trimmed/Capan-1_CTCF_ChIP-seq_2_2_trimmed.fastq, ktrim=r, k=23, mink=11, hdist=1, tpe, tbo, ref=/home/sk_ounce/bbmap/resources/adapters.fa, qtrim=rl, trimq=15, minlen=20]
+Version 39.01
+
+maskMiddle was disabled because useShortKmers=true
+0.013 seconds.
+Initial:
+Memory: max=4204m, total=4204m, free=4117m, used=87m
+
+Added 217135 kmers; time: 	0.060 seconds.
+Memory: max=4204m, total=4204m, free=3941m, used=263m
+
+Input is being processed as paired
+Started output streams:	0.015 seconds.
+Processing time:   		276.862 seconds.
+
+Input:                  	41235530 reads 		2061776500 bases.
+QTrimmed:               	2381615 reads (5.78%) 	21489239 bases (1.04%)
+KTrimmed:               	84858 reads (0.21%) 	2675696 bases (0.13%)
+Trimmed by overlap:     	8432 reads (0.02%) 	41674 bases (0.00%)
+Total Removed:          	309490 reads (0.75%) 	24206609 bases (1.17%)
+Result:                 	40926040 reads (99.25%) 	2037569891 bases (98.83%)
+
+Time:                         	276.948 seconds.
+Reads Processed:      41235k 	148.89k reads/sec
+Bases Processed:       2061m 	7.44m bases/sec

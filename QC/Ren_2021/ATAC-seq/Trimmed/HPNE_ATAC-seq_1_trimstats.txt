@@ -1,0 +1,26 @@
+java -ea -Xmx4183m -Xms4183m -cp /home/sk_ounce/mambaforge/opt/bbmap-39.01-0/current/ jgi.BBDuk in1=HPNE_ATAC-seq_1_1.fastq.gz in2=HPNE_ATAC-seq_1_2.fastq.gz out1=/mnt/d/SK/data/ren-panc/atac-seq/trimmed/HPNE_ATAC-seq_1_1_trimmed.fastq.gz out2=/mnt/d/SK/data/ren-panc/atac-seq/trimmed/HPNE_ATAC-seq_1_2_trimmed.fastq.gz ktrim=r k=23 mink=11 hdist=1 tpe tbo ref=/home/sk_ounce/bbmap/resources/adapters.fa qtrim=rl trimq=15 minlen=20
+Executing jgi.BBDuk [in1=HPNE_ATAC-seq_1_1.fastq.gz, in2=HPNE_ATAC-seq_1_2.fastq.gz, out1=/mnt/d/SK/data/ren-panc/atac-seq/trimmed/HPNE_ATAC-seq_1_1_trimmed.fastq.gz, out2=/mnt/d/SK/data/ren-panc/atac-seq/trimmed/HPNE_ATAC-seq_1_2_trimmed.fastq.gz, ktrim=r, k=23, mink=11, hdist=1, tpe, tbo, ref=/home/sk_ounce/bbmap/resources/adapters.fa, qtrim=rl, trimq=15, minlen=20]
+Version 39.01
+
+maskMiddle was disabled because useShortKmers=true
+0.012 seconds.
+Initial:
+Memory: max=4204m, total=4204m, free=4117m, used=87m
+
+Added 217135 kmers; time: 	0.066 seconds.
+Memory: max=4204m, total=4204m, free=3919m, used=285m
+
+Input is being processed as paired
+Started output streams:	0.251 seconds.
+Processing time:   		719.929 seconds.
+
+Input:                  	176090056 reads 		26413508400 bases.
+QTrimmed:               	27698018 reads (15.73%) 	436514811 bases (1.65%)
+KTrimmed:               	106386608 reads (60.42%) 	7876946416 bases (29.82%)
+Trimmed by overlap:     	4105126 reads (2.33%) 	23680770 bases (0.09%)
+Total Removed:          	1290402 reads (0.73%) 	8337141997 bases (31.56%)
+Result:                 	174799654 reads (99.27%) 	18076366403 bases (68.44%)
+
+Time:                         	720.258 seconds.
+Reads Processed:        176m 	244.48k reads/sec
+Bases Processed:      26413m 	36.67m bases/sec
