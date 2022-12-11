@@ -3,7 +3,7 @@
 #########################
 # Author: Saurav Kiri
 # Date: 2022-11-23
-# Description: Align downloaded single- or paired-end ChIP-seq FASTQ files to hg19 genome using BWA-MEM
+# Description: Align downloaded single- or paired-end ATAC-seq FASTQ files to hg19 genome using BWA-MEM
 # Dependencies: BWA-MEM, samtools (to produce sorted bam), MultiQC (for report aggregation)
 # Arguments: 
     # 1) path to directory with all FASTQ files 
@@ -28,6 +28,9 @@ echo -e "The current directory of FASTQ files is: ${PWD}"
 # Get files corresponding to blacklisted regions
 BLACKLIST=$(ls ~/project/blacklist/*reformatted.bed)
 
+# Generate sequence of canonical nuclear chromosomes to keep in final .bam
+CHROM=($(seq 1 1 22) X Y)
+
 # If flagged specified to SE, get FASTQ names and do unpaired alignment
 # Else, assume PE (default), get prefixes and align with both forward and reverse reads
 if [ ${FLAG} == "se" ]
@@ -46,12 +49,20 @@ then
         bwa mem -t 6 ${GENOME_INDEX} ${FULLNAME} | samtools sort --threads 6 | \
         tee "${BAM_OUTDIR}${prefix}-intermediate.bam" | \
         samtools view -@ 6 -F 260 -q 20 -b - | \
-        bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}.bam"
+        bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}-prefil.bam"
+
+        # Use samtools to keep only nuclear chromosomes
+        # Note that this step requires an indexed bam file
+        samtools index "${BAM_OUTDIR}${prefix}-prefil.bam"
+        samtools view -@ 6 -b "${BAM_OUTDIR}${prefix}-prefil.bam" ${CHROM[@]} > "${BAM_OUTDIR}${prefix}.bam"
 
         # Get mapping statistics with samtools stats and final reads kept w/ flagstat
         samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
+        samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-with-MT.txt"
         samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
+
         rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
+        rm "${BAM_OUTDIR}${prefix}-prefil*"     # Removes .bam and .bai
     done
 else
     # Since some files might be named, e.g., _1.fastq or _1_trimmed.fastq.gz, need to account for this
@@ -73,12 +84,20 @@ else
         bwa mem -t 6 ${GENOME_INDEX} ${READ_FILES[0]} ${READ_FILES[1]} | samtools sort --threads 6 | \
         tee "${BAM_OUTDIR}${prefix}-intermediate.bam" | \
         samtools view -@ 6 -F 260 -f 0x02 -q 20 -b - | \
-        bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}.bam"
+        bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}-prefil.bam"
+
+        # Use samtools to keep only nuclear chromosomes
+        # Note that this step requires an indexed bam file
+        samtools index "${BAM_OUTDIR}${prefix}-prefil.bam"
+        samtools view -@ 6 -b "${BAM_OUTDIR}${prefix}-prefil.bam" ${CHROM[@]} > "${BAM_OUTDIR}${prefix}.bam"
 
         # Get mapping statistics w/ samtools stat
         samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
+        samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-with-MT.txt"
         samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
+
         rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
+        rm "${BAM_OUTDIR}${prefix}-prefil*"
     done
 fi
 
