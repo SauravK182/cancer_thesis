@@ -32,7 +32,7 @@ BLACKLIST=$(ls ~/project/blacklist/*reformatted.bed)
 # Else, assume PE (default), get prefixes and align with both forward and reverse reads
 if [ ${FLAG} == "se" ]
 then
-    PREFIX_LIST=$(ls *fastq | sed -r "s/[.]fastq.*//")
+    PREFIX_LIST=$(ls *.fastq* | sed -r "s/[.]fastq.*//")
     for prefix in ${PREFIX_LIST}
     do
         # Account for if file is .fastq or .fastq.gz
@@ -55,7 +55,7 @@ then
     done
 else
     # Since some files might be named, e.g., _1.fastq or _1_trimmed.fastq.gz, need to account for this
-    PREFIX_LIST=$(ls *fastq | sed -r "s/_[12][.]fastq.*|_[12]_trimmed[.]fastq.*//" | uniq)
+    PREFIX_LIST=$(ls *.fastq* | sed -r "s/_[12][.]fastq.*|_[12]_trimmed[.]fastq.*//" | uniq)
 
     # Each filehandle should be unique to the forward and reverse reads
     # Obtain all files with handle = prefix and place into an array (indexing starts at 0)

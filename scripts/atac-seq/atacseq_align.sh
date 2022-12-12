@@ -2,7 +2,7 @@
 
 #########################
 # Author: Saurav Kiri
-# Date: 2022-11-23
+# Date: 2022-12-11
 # Description: Align downloaded single- or paired-end ATAC-seq FASTQ files to hg19 genome using BWA-MEM
 # Dependencies: BWA-MEM, samtools (to produce sorted bam), MultiQC (for report aggregation)
 # Arguments: 
@@ -31,14 +31,17 @@ BLACKLIST=$(ls ~/project/blacklist/*reformatted.bed)
 # Generate sequence of canonical nuclear chromosomes to keep in final .bam
 CHROM=($(seq 1 1 22) X Y)
 
+# Get prefix list (filenames without extensions)
+# Since some files might be named, e.g., _1.fastq or _trimmed.fastq.gz, need to account for this
+PREFIX_LIST=$(ls *fastq* | sed -r "s/[.]fastq.*|_[12][.]fastq.*|_[12]_trimmed[.]fastq.*//" | uniq)
+
 # If flagged specified to SE, get FASTQ names and do unpaired alignment
 # Else, assume PE (default), get prefixes and align with both forward and reverse reads
-if [ ${FLAG} == "se" ]
-then
-    PREFIX_LIST=$(ls *fastq | sed -r "s/[.]fastq.*//")
-    for prefix in ${PREFIX_LIST}
-    do
-        # Account for if file is .fastq or .fastq.gz
+for prefix in ${PREFIX_LIST}
+do
+    if [ ${FLAG} == "se" ]
+    then
+        # Accounts for if file is .fastq or .fastq.gz
         FULLNAME=$(ls ${prefix}*)
         echo -e "The current alignment is taking place on: ${FULLNAME}\n"
 
@@ -50,28 +53,7 @@ then
         tee "${BAM_OUTDIR}${prefix}-intermediate.bam" | \
         samtools view -@ 6 -F 260 -q 20 -b - | \
         bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}-prefil.bam"
-
-        # Use samtools to keep only nuclear chromosomes
-        # Note that this step requires an indexed bam file
-        samtools index "${BAM_OUTDIR}${prefix}-prefil.bam"
-        samtools view -@ 6 -b "${BAM_OUTDIR}${prefix}-prefil.bam" ${CHROM[@]} > "${BAM_OUTDIR}${prefix}.bam"
-
-        # Get mapping statistics with samtools stats and final reads kept w/ flagstat
-        samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
-        samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-with-MT.txt"
-        samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
-
-        rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
-        rm "${BAM_OUTDIR}${prefix}-prefil*"     # Removes .bam and .bai
-    done
-else
-    # Since some files might be named, e.g., _1.fastq or _1_trimmed.fastq.gz, need to account for this
-    PREFIX_LIST=$(ls *fastq | sed -r "s/_[12][.]fastq.*|_[12]_trimmed[.]fastq.*//" | uniq)
-
-    # Each filehandle should be unique to the forward and reverse reads
-    # Obtain all files with handle = prefix and place into an array (indexing starts at 0)
-    for prefix in ${PREFIX_LIST}
-    do
+    else
         READ_FILES=($(ls ${prefix}*))
         echo -e "The current alignment is taking place on: ${READ_FILES[0]} and ${READ_FILES[1]}\n"
         
@@ -85,21 +67,21 @@ else
         tee "${BAM_OUTDIR}${prefix}-intermediate.bam" | \
         samtools view -@ 6 -F 260 -f 0x02 -q 20 -b - | \
         bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}-prefil.bam"
+    fi
+    # Use samtools to keep only nuclear chromosomes
+    # Note that this step requires an indexed bam file
+    samtools index "${BAM_OUTDIR}${prefix}-prefil.bam"
+    samtools view -@ 6 -b "${BAM_OUTDIR}${prefix}-prefil.bam" ${CHROM[@]} > "${BAM_OUTDIR}${prefix}.bam"
 
-        # Use samtools to keep only nuclear chromosomes
-        # Note that this step requires an indexed bam file
-        samtools index "${BAM_OUTDIR}${prefix}-prefil.bam"
-        samtools view -@ 6 -b "${BAM_OUTDIR}${prefix}-prefil.bam" ${CHROM[@]} > "${BAM_OUTDIR}${prefix}.bam"
+    # Get mapping statistics with samtools stats/idxstats and final reads kept w/ flagstat
+    # Note MultiQC requires idxstats in filename to recognize idxstats
+    samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
+    samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-idxstats.txt"
+    samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
 
-        # Get mapping statistics w/ samtools stat
-        samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
-        samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-with-MT.txt"
-        samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
-
-        rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
-        rm "${BAM_OUTDIR}${prefix}-prefil*"
-    done
-fi
+    rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
+    rm ${BAM_OUTDIR}${prefix}-prefil*     # Removes .bam and .bai
+done
 
 # Aggregate reports from samtools stats into one with MultiQC
 multiqc --force --module samtools -o ${REPORTS_DIR} -n "multiqc_alignment_results" ${BAM_OUTDIR}
