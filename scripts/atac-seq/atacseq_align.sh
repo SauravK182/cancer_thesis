@@ -76,7 +76,8 @@ do
     # Get mapping statistics with samtools stats/idxstats and final reads kept w/ flagstat
     # Note MultiQC requires idxstats in filename to recognize idxstats
     samtools stats -@ 6 "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
-    samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-idxstats.txt"
+    samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" | Rscript parse_idxstats.r 
+    mv nuclear_df.txt "${BAM_OUTDIR}${prefix}-idxstats.txt"
     samtools flagstat -@ 6 "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
 
     rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
