@@ -49,8 +49,8 @@ then
         bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}.bam"
 
         # Get mapping statistics with samtools stats and final reads kept w/ flagstat
-        samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
-        samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
+        samtools stats -@ 6 "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
+        samtools flagstat -@ 6 "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
         rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
     done
 else
@@ -76,8 +76,8 @@ else
         bedtools intersect -v -abam stdin -b ${BLACKLIST} > "${BAM_OUTDIR}${prefix}.bam"
 
         # Get mapping statistics w/ samtools stat
-        samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
-        samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
+        samtools stats -@ 6 "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
+        samtools flagstat -@ 6 "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
         rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
     done
 fi

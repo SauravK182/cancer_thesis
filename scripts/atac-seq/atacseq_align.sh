@@ -70,14 +70,14 @@ do
     fi
     # Use samtools to keep only nuclear chromosomes
     # Note that this step requires an indexed bam file
-    samtools index "${BAM_OUTDIR}${prefix}-prefil.bam"
+    samtools index -@ 6 "${BAM_OUTDIR}${prefix}-prefil.bam"
     samtools view -@ 6 -b "${BAM_OUTDIR}${prefix}-prefil.bam" ${CHROM[@]} > "${BAM_OUTDIR}${prefix}.bam"
 
     # Get mapping statistics with samtools stats/idxstats and final reads kept w/ flagstat
     # Note MultiQC requires idxstats in filename to recognize idxstats
-    samtools stats "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
+    samtools stats -@ 6 "${BAM_OUTDIR}${prefix}-intermediate.bam" > "${BAM_OUTDIR}${prefix}.txt"
     samtools idxstats "${BAM_OUTDIR}${prefix}-prefil.bam" > "${BAM_OUTDIR}${prefix}-idxstats.txt"
-    samtools flagstat "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
+    samtools flagstat -@ 6 "${BAM_OUTDIR}${prefix}.bam" > "${BAM_OUTDIR}${prefix}-filtered.txt"
 
     rm "${BAM_OUTDIR}${prefix}-intermediate.bam"
     rm ${BAM_OUTDIR}${prefix}-prefil*     # Removes .bam and .bai
