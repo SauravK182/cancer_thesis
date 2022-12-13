@@ -16,31 +16,52 @@ txt2counts <- function(featurecounts.txt) {
 }
 
 ensembl_to_gene <- function(ensembl.genes) {
+    require(EnsDb.Hsapiens.v79)
     geneIDs <- ensembldb::select(EnsDb.Hsapiens.v79,
                                  keys = ensembl.genes,
                                  keytype = "GENEID",
                                  columns = c("SYMBOL", "GENEID"))
+    # Ensembl IDs mapping to NA are excluded
+    # Need to manually match each original Ensembl ID to corresponding HGNC symbol
+    # If no Ensembl ID is included in geneIDs, assign it NA for HGNC symbol
     hgnc.sym <- c()
-    for (i in seq_len(nrow(geneIDs))) {
-        geneID.ind <- match(geneIDs[i, 2], ensembl.genes)
-        hgnc.sym[geneID.ind] <- geneIDs[i, 1]
+    for (i in seq_len(length(ensembl.genes))) {
+        id.index <- match(ensembl.genes[i], geneIDs[, 2])
+        if (is.na(id.index)) {
+            hgnc.sym <- c(hgnc.sym, NA)
+        } else {
+            hgnc.sym <- c(hgnc.sym, geneIDs[id.index, 1])
+        }
     }
     return(hgnc.sym)
 }
 
-# Performs DGE analysis on a given featurecounts text file in current WD
+# Performs DGE analysis with DESeq2 on a given featurecounts text file or counts data frame.
+#
 # Requires:
-    # featurecounts.txt: Name/path to a featurecounts count file
-    # num.reps: Number of replicates per sample
-    # culture.facts: A character vector of the cultures - NOTE THAT THE ORDER OF THE VECTOR WILL BE THE ORDER OF THE FACTOR LEVEL!
-        ## Assumes that the character vector is already leveled such that, e.g., metastasis > primary cancer > control
+    # featurecounts: Name/path to a featurecounts count file OR df-like counts object.
+    #
+    # coldata: A df-like design matrix object - this assumes the user has already factored and leveled the columns.
+#
+# Optional:
+    # contrast.var: Character string indicating which variable to perform DGE for. Assumes last variable in coldata.
+    #
+    # contrasts: Character string for levels to be pairwise tested. Levels listed first will be in the numerator.
+    #
     # alphaTest: A FDR-adjusted p-value to determine significance for DE. Default is 0.05.
+    # 
     # lfc: A threshold to pass to results() from DESeq2 in determining the cutoff for what consitutes a differentially expressed gene.
         ## Default is 2.
-# Return value: A list of DESeqResults objects
-dge_analysis <- function(featurecounts, coldata, formula.vec = colnames(coldata), contrasts, alphaTest = 0.05, lfc = 2) {
+    #
+# Return value: A list of 1) list of DESeqResults objects, 2) the original DGE object from DESeq()
+dge_analysis <- function(featurecounts,
+                         coldata,
+                         contrast.var = colnames(coldata)[length(colnames(coldata))],
+                         contrasts = coldata[, colnames(coldata) == contrast.var] %>% levels(),
+                         formula.vec = colnames(coldata),
+                         alphaTest = 0.05,
+                         lfc = 2) {
     require(DESeq2)
-    require(EnsDb.Hsapiens.v79)
 
     if (class(featurecounts) == "character") {
         counts.df <- txt2counts(featurecounts)      # assume file input
@@ -70,6 +91,7 @@ dge_analysis <- function(featurecounts, coldata, formula.vec = colnames(coldata)
 
     # Save size factors
     canc.sf <- sizeFactors(canc.dge)
+    print(canc.sf)
     print(summary(canc.sf))
 
     # Use combn() to get all possible combinations of factors for DGE testing - must do it pairwise
@@ -84,26 +106,16 @@ dge_analysis <- function(featurecounts, coldata, formula.vec = colnames(coldata)
 
     dge.results <- lapply(1:length(contrasts),
                           function(x) results(canc.dge,
-                                              contrast = c("Culture", contrasts[[x]]),
+                                              contrast = c(contrast.var, contrasts[[x]]),
                                               alpha = alphaTest,
                                               lfcThreshold = lfc))
 
-    # Now add HGNC Gene Symbols from Ensembl IDs
     for (i in 1:length(dge.results)) {
         ensembl.genes <- rownames(dge.results[[i]])
-        geneIDs <- ensembldb::select(EnsDb.Hsapiens.v79,
-                              keys = ensembl.genes,
-                              keytype = "GENEID",
-                              columns = c("SYMBOL", "GENEID"))
-        hgnc.sym <- c()
-        for (i in seq_len(nrow(geneIDs))) {
-            geneID.ind <- match(geneIDs[i, 2], ensembl.genes)
-            hgnc.sym[geneID.ind] <- geneIDs[i, 1]
-        }
-        dge.results[[i]]$Symbol <- hgnc.sym
+        dge.results[[i]]$Symbol <- ensembl_to_gene(ensembl.genes)
     }
 
-    return(dge.results)
+    return(list(dge.results, canc.dge))
 }
 
 # Keeps only significant DGE genes (p-adj < 0.05)

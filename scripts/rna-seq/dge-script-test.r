@@ -1,16 +1,11 @@
-project.dir <- "D:/SK/data"
-ren.dir <- "ren-panc"
-rna.dir <- "rna-seq/aligned"
+featurecounts <- file.path(ren.data.dir, rna.data.dir, "ren_rna_rawcounts.txt")
 
-setwd(file.path(project.dir, ren.dir, rna.dir))
+coldata <- data.frame(Culture = rep(c("CAPAN1", "HPNE", "PANC1"), each = 3))
+coldata$Culture <- factor(coldata$Culture, levels = c("CAPAN1", "PANC1", "HPNE"))
 
-source(file.path("C:", "Users", "jvons", "Documents", "NCF", "Thesis", "Scripts", "dge_analysis.r"))
-
-featurecounts <- "ren_rna_rawcounts.txt"
-cultures <- c("CAPAN1", "PANC1", "HPNE")
-
-test.dge <- dge_analysis(featurecounts, cultures, 3)
-test <- test.dge[[1]]
+test.dge <- dge_analysis(featurecounts, coldata, contrasts = c("CAPAN1", "PANC1", "HPNE"))
+test <- test.dge[[1]][[1]]
+summary(test)
 
 # See https://stackoverflow.com/questions/28543517/ for converting ENSEMBL to HGNC
 require(EnsDb.Hsapiens.v79)
@@ -22,11 +17,6 @@ geneIDs <- ensembldb::select(EnsDb.Hsapiens.v79,
 
 # ENSEMBl IDs that map to NA HGNC symbols are excluded
 # Need to manually match the HGNC symbol based on its assoc'd GENEID
-hgnc.sym <- c()
-for (i in seq_len(nrow(geneIDs))) {
-    geneID.ind <- match(geneIDs[i, 2], ensembl.genes)
-    hgnc.sym[geneID.ind] <- geneIDs[i, 1]
-}
 
 test.signif <- signifDE(test)
 

@@ -14,6 +14,7 @@ setwd(file.path(project.dir, ren.dir, rna.dir))
 
 # Read in featureCounts file
 ## Skip first line, which contains the command used
+featurecounts.txt <- file.path(ren.data.dir, rna.data.dir, "ren_rna_rawcounts.txt")
 featurecounts <- read.delim("ren_rna_rawcounts.txt", header = TRUE, skip = 1)
 
 # First column to the right of length is where the counts start
@@ -42,6 +43,7 @@ ren.dds <- DESeqDataSetFromMatrix(countData = counts.df,
 keepCount <- rowSums(counts(ren.dds)) >= 10
 ren.dds <- ren.dds[keepCount, ]
 ren.dge <- DESeq(ren.dds)
+res <- lfcShrink(ren.dge, contrast = c("Culture", "CAPAN1", "PANC1"), type = "normal")
 
 # Save size factors
 ren.sf <- sizeFactors(ren.dge)
@@ -62,9 +64,9 @@ summary(ren.sf)
 ## Note that DESeq2's sample_1 vs. sample_2 indicates the LFC values are log2(sample_1/sample_2)
 contrasts <- list(c("PANC1", "HPNE"), c("CAPAN1", "HPNE"), c("CAPAN1", "PANC1"))
 alphaTest <- 0.05
-ren.hpne.panc <- results(ren.dge, contrast = c("Culture", contrasts[[1]]), alpha = alphaTest)
+ren.hpne.panc <- results(ren.dge, contrast = c("Culture", contrasts[[1]]), alpha = alphaTest, lfcThreshold = 2)
 ren.hpne.capan <- results(ren.dge, contrast = c("Culture", contrasts[[2]]), alpha = alphaTest)
-ren.panc.capan <- results(ren.dge, contrast = c("Culture", contrasts[[3]]), alpha = alphaTest)
+ren.panc.capan <- results(ren.dge, contrast = c("Culture", contrasts[[3]]), alpha = alphaTest, lfcThreshold = 0)
 
 # Plot PCA
 rld <- rlog(ren.dge, blind = TRUE)
