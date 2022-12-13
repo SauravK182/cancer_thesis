@@ -26,6 +26,22 @@ FLAG="${6:-pe}" # Sets the 6th variable to "pe" by default
 cd ${FASTQ_DIR}
 echo -e "Current directory of FASTQ files is: ${FASTQ_DIR}"
 
+# To account for possible .fastq or .fastq.gz extension, dynamically match extension
+    # Get full file name
+    # Use parameter expansion ${file#*.} to delete everything up to and including first period
+    # Save this + leading period as file extension
+# file_fullname will do this programmatically and will only create global variable EXT
+file_fullname () {
+    local FILE_PREFIX=${1}
+    local FULLNAMES=($(ls ${FILE_PREFIX}*))
+    EXT=()
+    local name
+    for name in ${FULLNAMES[@]}
+    do
+        EXT+=(".${name#*.}")
+    done
+}
+
 # If files are SE (i.e., flag var is set to "se"), get list of SE FASTQ files
 # Else, assumes reads are PE and trim/filter accordingly.
 if [ ${FLAG} == "se" ]
@@ -36,9 +52,11 @@ then
     # Use bbduk with vars to trim and filter reads; save stderr summary to file
     for prefix in ${PREFIX_LIST}
     do
-        echo -e "Currently starting trim on FASTQ file for ${prefix}.\n"
+        file_fullname ${prefix}
+        # Returns an array containing the extensions for each file
+        echo -e "Currently starting trim on FASTQ file for ${prefix}${EXT[0]}.\n"
 
-        bbduk.sh in="${prefix}.fastq" out="${TRIMOUT_DIR}${prefix}_trimmed.fastq" \
+        bbduk.sh in="${prefix}${EXT[0]}" out="${TRIMOUT_DIR}${prefix}_trimmed${EXT[0]}" \
         ktrim=r \
         k=23 \
         mink=11 \
@@ -56,10 +74,13 @@ else
     # Use bbduk with vars to trim and filter reads; save stderr summary to file
     for prefix in ${PREFIX_LIST}
     do
+        file_fullname ${prefix}
+        # In this case, the array returned should have 2 elements
+        # Since for each PE experiment (prefix), there is a forward and reverse read file
         echo -e "Currently starting trim on FASTQ files for ${prefix}.\n"
 
-        bbduk.sh in1="${prefix}_1.fastq" in2="${prefix}_2.fastq" \
-        out1="${TRIMOUT_DIR}${prefix}_1_trimmed.fastq" out2="${TRIMOUT_DIR}${prefix}_2_trimmed.fastq" \
+        bbduk.sh in1="${prefix}_1${EXT[0]}" in2="${prefix}_2${EXT[1]}" \
+        out1="${TRIMOUT_DIR}${prefix}_1_trimmed${EXT[0]}" out2="${TRIMOUT_DIR}${prefix}_2_trimmed${EXT[1]}" \
         ktrim=r \
         k=23 \
         mink=11 \
@@ -76,12 +97,9 @@ fi
 
 
 # Get list of trimmed FASTQ files and perform FastQC
-for f in ${TRIMOUT_DIR}*.fastq
-do
-    echo "Processing ${f}"
-    fastqc --outdir ${QC_DIR} ${f}
-    echo -e "Finished QC on ${f}.\nThe report is placed in ${QC_DIR}."
-done
+# Set to run on 6 files simultaneously (threads = 6)
+# Use two wildcards to match either .fastq.gz or .fastq
+fastqc --threads 6 --outdir ${QC_DIR} ${TRIMOUT_DIR}*.fastq*
 
 # Generate aggregate MultiQC report
 multiqc --module fastqc --module bbmap --force --outdir ${QC_DIR} \

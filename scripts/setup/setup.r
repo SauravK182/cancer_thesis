@@ -1,3 +1,24 @@
-# Set dir to datasets
-myData <- file.path(myScripts <- file.path("C:", "Users", "jvons", "Documents", "NCF", "Thesis", "Datasets"))
-setwd(myData)
+# Load necessary packages
+library(tidyverse)
+library(org.Hs.eg.db)
+library(annotate)
+library(DESeq2)
+library(gprofiler2)
+library(ComplexHeatmap)
+library(EnsDb.Hsapiens.v79)
+
+# Set up data directories
+main.data.dir <- "D:/SK/data"
+ren.data.dir <- "ren-panc"
+rod.data.dir <- "rod-rcc"
+rna.data.dir <- "rna-seq/aligned"
+
+# Scripts directory
+scripts.dir <- "C:/Users/jvons/Documents/NCF/Thesis/scripts"
+rna.scripts.dir <- "rna-seq"
+
+# Set directory to main data directory
+setwd(main.data.dir)
+
+# Source necessary files
+source(file.path(scripts.dir, rna.scripts.dir, "dge_analysis.r"))

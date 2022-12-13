@@ -15,6 +15,19 @@ txt2counts <- function(featurecounts.txt) {
     return(counts.df)
 }
 
+ensembl_to_gene <- function(ensembl.genes) {
+    geneIDs <- ensembldb::select(EnsDb.Hsapiens.v79,
+                                 keys = ensembl.genes,
+                                 keytype = "GENEID",
+                                 columns = c("SYMBOL", "GENEID"))
+    hgnc.sym <- c()
+    for (i in seq_len(nrow(geneIDs))) {
+        geneID.ind <- match(geneIDs[i, 2], ensembl.genes)
+        hgnc.sym[geneID.ind] <- geneIDs[i, 1]
+    }
+    return(hgnc.sym)
+}
+
 # Performs DGE analysis on a given featurecounts text file in current WD
 # Requires:
     # featurecounts.txt: Name/path to a featurecounts count file
@@ -25,38 +38,42 @@ txt2counts <- function(featurecounts.txt) {
     # lfc: A threshold to pass to results() from DESeq2 in determining the cutoff for what consitutes a differentially expressed gene.
         ## Default is 2.
 # Return value: A list of DESeqResults objects
-dge_analysis <- function(featurecounts, culture.factors, num.reps, alphaTest = 0.05, lfc = 2) {
+dge_analysis <- function(featurecounts, coldata, formula.vec = colnames(coldata), contrasts, alphaTest = 0.05, lfc = 2) {
     require(DESeq2)
-    require(org.Hs.eg.db)
+    require(EnsDb.Hsapiens.v79)
 
     if (class(featurecounts) == "character") {
-        counts.df <- txt2counts(featurecounts)
-    } else if (class(featurecounts) != "data.frame") {
-        stop("Argument 'featurecounts' must be either a valid filename or data frame.")
+        counts.df <- txt2counts(featurecounts)      # assume file input
+    } else if ("data.frame" %in% class(featurecounts)) {
+        counts.df <- as.data.frame(featurecounts)   # standardize input
+    } else {
+        stop("Argument 'featurecounts' must be a data frame-like object or valid input file.")
     }
 
-    # Set up coldata df, which tells DESeq info about each column of the count matrix
-    ## Will also serve as the "design" - how to model the samples, estimate dispersions and log2-fold changes b/w samples
-    coldata <- data.frame(Culture = rep(culture.factors, each = num.reps))
+    if ("data.frame" %in% class(coldata)) {
+        design.mat <- as.data.frame(coldata)
+    } else {
+        stop("Argument 'coldata' must be a data frame-like object for passing to DESeq2.")
+    }
 
-    # Set factor level so DESeq2 knows which is the reference (lowest level)
-    coldata$Culture <- factor(coldata$Culture, levels = culture.factors)
+    # Generate formula for design from formula.vec
+    collapsed.vec <- paste(formula.vec, collapse = "+") # will collapse vector "a b c" into "a+b+c"
+    des.formula <- as.formula(paste0("~", collapsed.vec))   # paste as formula object for use in DDS
 
     # Run DESeq to get the DESeqDataSet, keep only features with > 10 counts
     canc.dds <- DESeqDataSetFromMatrix(countData = counts.df,
-                                    colData = coldata,
-                                    design = ~ Culture)
+                                    colData = design.mat,
+                                    design = des.formula)
     keepCount <- rowSums(counts(canc.dds)) >= 10
     canc.dds <- canc.dds[keepCount, ]
     canc.dge <- DESeq(canc.dds)
 
     # Save size factors
     canc.sf <- sizeFactors(canc.dge)
-    canc.sf
     print(summary(canc.sf))
-    
+
     # Use combn() to get all possible combinations of factors for DGE testing - must do it pairwise
-    factorpairs.mat <- combn(culture.factors, 2)
+    factorpairs.mat <- combn(contrasts, 2)
 
     # Use lapply() to transform the matrix into a list of column vectors
     ## Seq_len(ncol()) will produce a vector of 1:ncol()
@@ -65,11 +82,25 @@ dge_analysis <- function(featurecounts, culture.factors, num.reps, alphaTest = 0
     contrasts <- lapply(seq_len(ncol(factorpairs.mat)), function(x) factorpairs.mat[, x])
     # dge.results <- lapply(1:length(contrasts), function(x) results(canc.dge, contrast = c("Culture", contrasts[[x]]), alpha = alphaTest))
 
-    dge.results <- lapply(1:length(contrasts), function(x) results(canc.dge, contrast = c("Culture", contrasts[[x]]), alpha = alphaTest, lfcThreshold = lfc))
+    dge.results <- lapply(1:length(contrasts),
+                          function(x) results(canc.dge,
+                                              contrast = c("Culture", contrasts[[x]]),
+                                              alpha = alphaTest,
+                                              lfcThreshold = lfc))
 
     # Now add HGNC Gene Symbols from Ensembl IDs
     for (i in 1:length(dge.results)) {
-        dge.results[[i]]$Symbol <- mapIds(org.Hs.eg.db, keys = rownames(dge.results[[i]]), keytype = "ENSEMBL", column = "SYMBOL")
+        ensembl.genes <- rownames(dge.results[[i]])
+        geneIDs <- ensembldb::select(EnsDb.Hsapiens.v79,
+                              keys = ensembl.genes,
+                              keytype = "GENEID",
+                              columns = c("SYMBOL", "GENEID"))
+        hgnc.sym <- c()
+        for (i in seq_len(nrow(geneIDs))) {
+            geneID.ind <- match(geneIDs[i, 2], ensembl.genes)
+            hgnc.sym[geneID.ind] <- geneIDs[i, 1]
+        }
+        dge.results[[i]]$Symbol <- hgnc.sym
     }
 
     return(dge.results)
