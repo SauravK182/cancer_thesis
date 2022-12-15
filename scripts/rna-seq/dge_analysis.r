@@ -39,21 +39,22 @@ ensembl_to_gene <- function(ensembl.genes) {
 # Performs DGE analysis with DESeq2 on a given featurecounts text file or counts data frame.
 #
 # Requires:
-    # featurecounts: Name/path to a featurecounts count file OR df-like counts object.
+    # `featurecounts`: Name/path to a featurecounts count file OR df-like counts object.
     #
-    # coldata: A df-like design matrix object - this assumes the user has already factored and leveled the columns.
+    # `coldata`: A df-like design matrix object - this assumes the user has already factored and leveled the columns.
 #
 # Optional:
-    # contrast.var: Character string indicating which variable to perform DGE for. Assumes last variable in coldata.
+    # `contrast.var`: Character string indicating which variable to perform DGE for. Assumes last variable in `coldata`.
     #
-    # contrasts: Character string for levels to be pairwise tested. Levels listed first will be in the numerator.
+    # `contrasts`: Character string for levels to be pairwise tested. Levels listed first will be in the numerator.
     #
-    # alphaTest: A FDR-adjusted p-value to determine significance for DE. Default is 0.05.
+    # `alphaTest`: A FDR-adjusted p-value to determine significance for DE. Default is 0.05.
     # 
-    # lfc: A threshold to pass to results() from DESeq2 in determining the cutoff for what consitutes a differentially expressed gene.
+    # `lfc`: A threshold to pass to `lfcShrink()` from `DESeq2` in 
+    # determining the cutoff for what consitutes a differentially expressed gene.
         ## Default is 2.
     #
-# Return value: A list of 1) list of DESeqResults objects, 2) the original DGE object from DESeq()
+# Return value: A list of 1) list of `DESeqResults` objects, 2) the original `DGE` object from `DESeq()`
 dge_analysis <- function(featurecounts,
                          coldata,
                          contrast.var = colnames(coldata)[length(colnames(coldata))],
@@ -105,10 +106,11 @@ dge_analysis <- function(featurecounts,
     # dge.results <- lapply(1:length(contrasts), function(x) results(canc.dge, contrast = c("Culture", contrasts[[x]]), alpha = alphaTest))
 
     dge.results <- lapply(1:length(contrasts),
-                          function(x) results(canc.dge,
-                                              contrast = c(contrast.var, contrasts[[x]]),
-                                              alpha = alphaTest,
-                                              lfcThreshold = lfc))
+                          function(x) lfcShrink(canc.dge,
+                                                type = "normal",
+                                                contrast = c(contrast.var, contrasts[[x]]),
+                                                alpha = alphaTest,
+                                                lfcThreshold = lfc))
 
     for (i in 1:length(dge.results)) {
         ensembl.genes <- rownames(dge.results[[i]])
