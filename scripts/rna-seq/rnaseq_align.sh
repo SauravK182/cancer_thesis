@@ -33,14 +33,15 @@ echo "The current directory of FASTQ files is: ${PWD}"
 
 if [ ${FLAG} == "se" ]
 then
-    PREFIX_LIST=$(ls *fastq | sed -r "s/[.]fastq//")
+    PREFIX_LIST=$(ls *fastq* | sed -r "s/[.]fastq.*//")
     for prefix in ${PREFIX_LIST}
     do
-        echo -e "The current alignment is taking place on: ${prefix}.fastq\n"
+        FULLNAME=$(ls ${prefix}*)
+        echo -e "The current alignment is taking place on: ${FULLNAME}\n"
         
         # Use -U to indicate unpaired read
-        hisat2 --new-summary --summary-file "${BAM_DIR}${prefix}.txt" \
-        -x ${REF_PATH} -U "${prefix}.fastq" | samtools sort -o "${BAM_DIR}${prefix}.bam"
+        hisat2 --new-summary --summary-file "${BAM_DIR}${prefix}.txt" -p 6 \
+        -x ${REF_PATH} -U "${FULLNAME}" | samtools sort -o "${BAM_DIR}${prefix}.bam"
     done
 else
     # First, obtain the list of all paired-end read files
@@ -49,7 +50,7 @@ else
     ## sed usage is as follows for replacing strings: sed s/<instance-to-rep>/<replacement-str>; -r indicates use extended regexp
     ## uniq filters/removes ADJACENT duplicate lines from a text file
     ## Command due to https://www.biostars.org/p/98222/
-    PREFIX_LIST=$(ls *fastq | sed -r "s/_[12][.]fastq|_[12]_trimmed[.]fastq//" | uniq)
+    PREFIX_LIST=$(ls *fastq* | sed -r "s/_[12][.]fastq.*|_[12]_trimmed[.]fastq.*//" | uniq)
 
     # Therefore above, we are getting the list of all fastq files, replacing the "_1.fastq" or "_2.fastq" with nothing, then removing all duplicate names
     # This gives us only the prefixes we want - e.g., hpne-r1, etc.
@@ -59,9 +60,11 @@ else
     # Align to genome with HISAT2
     for prefix in ${PREFIX_LIST}
     do
-        echo -e "The current alignment is taking place on: ${prefix}\n"
-        hisat2 --new-summary --summary-file "${BAM_DIR}${prefix}.txt" \
-        -x ${REF_PATH} -1 "${prefix}_1.fastq" -2 "${prefix}_2.fastq" | samtools sort -o "${BAM_DIR}${prefix}.bam"
+        READ_FILES=($(ls ${prefix}*))
+        echo -e "The current alignment is taking place on: ${READ_FILES[0]} and ${READ_FILES[1]}\n"
+
+        hisat2 --new-summary --summary-file "${BAM_DIR}${prefix}.txt" -p 6 \
+        -x ${REF_PATH} -1 ${READ_FILES[0]} -2 ${READ_FILES[1]} | samtools sort -o "${BAM_DIR}${prefix}.bam"
     done
 fi
 

@@ -6,11 +6,11 @@
 # Description: Download the SRA FASTQ files for a given set of SRRs and outfile names
 # Dependencies: SRA Toolkit (https://github.com/ncbi/sra-tools/wiki)
 # Arguments: 
-    # 1) A .csv with SRR filename and output file names for fasterq-dump
+    # 1) Directory to place dumped FASTQ-files
+    # 2) A .csv with SRR filename and output file names for fasterq-dump
         # Note: ensure this .csv does not possess the Windows-specific carriage return (\r) newline char 
-    # 2) Directory to place dumped FASTQ-files
     # 3) (Optional) "gzip" - will indicate to gzip the fastq files
-# Usage: bash ~/project/scripts/preprocessing/01_fastq_download.sh /path/to/download/dir/ "filename.csv"
+# Usage: bash ~/project/scripts/preprocessing/01_fastq_download.sh /path/to/download/dir/ "filename.csv" [gzip]
 #########################
 
 # Get file and directory path from argument
@@ -42,7 +42,7 @@ do
 done < ${FILE_NAME}
 
 # Gzip files using parallel gzip (pigz) if requested
-if [ ${GZIP_FLAG} == "gzip"]
+if [ ${GZIP_FLAG} == "gzip" ]
 then
     for file in ${DATA_DIR}*.fastq
     do

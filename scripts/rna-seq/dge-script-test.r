@@ -3,9 +3,13 @@ featurecounts <- file.path(ren.data.dir, rna.data.dir, "ren_rna_rawcounts.txt")
 coldata <- data.frame(Culture = rep(c("CAPAN1", "HPNE", "PANC1"), each = 3))
 coldata$Culture <- factor(coldata$Culture, levels = c("CAPAN1", "PANC1", "HPNE"))
 
-test.dge <- dge_analysis(featurecounts, coldata, contrasts = c("CAPAN1", "PANC1", "HPNE"))
-test <- test.dge[[1]][[1]]
-summary(test)
+test.dge <- dge_analysis(featurecounts, coldata, contrasts = c("CAPAN1", "PANC1", "HPNE"), lfc = 0)
+capan.panc <- test.dge[[1]][[1]]
+summary(capan.panc)
+plotMA(capan.panc)
+
+capan.panc.signif <- signifDE(capan.panc)
+capan.panc.signif.ens <- rownames(capan.panc.signif)
 
 # See https://stackoverflow.com/questions/28543517/ for converting ENSEMBL to HGNC
 require(EnsDb.Hsapiens.v79)

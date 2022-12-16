@@ -1,10 +1,6 @@
 # Load necessary packages
 library(tidyverse)
-library(org.Hs.eg.db)
-library(annotate)
 library(DESeq2)
-library(gprofiler2)
-library(ComplexHeatmap)
 library(EnsDb.Hsapiens.v79)
 
 # Set up data directories

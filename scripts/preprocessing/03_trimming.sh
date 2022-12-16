@@ -46,7 +46,7 @@ file_fullname () {
 # Else, assumes reads are PE and trim/filter accordingly.
 if [ ${FLAG} == "se" ]
 then
-    PREFIX_LIST=$(ls *fastq | sed -r "s/[.]fastq//")
+    PREFIX_LIST=$(ls *fastq* | sed -r "s/[.]fastq.*//")
     echo -e "The FASTQ files to be trimmed are:\n${PREFIX_LIST}"
 
     # Use bbduk with vars to trim and filter reads; save stderr summary to file
@@ -68,7 +68,7 @@ then
         echo -e "\nDone with trim on FASTQ file for ${prefix}. The trimmed file is in ${TRIMOUT_DIR}.\n"
     done
 else
-    PREFIX_LIST=$(ls *fastq | sed -r "s/_[12][.]fastq//" | uniq)
+    PREFIX_LIST=$(ls *fastq* | sed -r "s/_[12][.]fastq.*//" | uniq)
     echo -e "The FASTQ files to be trimmed are:\n${PREFIX_LIST}"
 
     # Use bbduk with vars to trim and filter reads; save stderr summary to file
