@@ -58,12 +58,31 @@ done
 
 # Call multiBamSummary
 echo -e "Now running multiBamSummary\n"
-multiBamSummary bins --binSize ${3} --bamfiles ${BAM_FILES} -o "${OUTDIR}${NAME}.npz"
+if [ -f "${OUTDIR}${NAME}.npz" ]
+then
+    :   # skip if npz file already exists
+else
+    multiBamSummary bins --binSize ${3} -p 8 --bamfiles ${BAM_FILES} -o "${OUTDIR}${NAME}.npz"
+fi
 
 # Use produced .npz to make a correlation plot
 echo -e "Finished multiBamSummary. Now creating heatmap from ${OUTDIR}${NAME}.npz"
+
+# Get sample names by removing .bam extension
+# Also remove directories (i.e., remove all substrings with "/")
+SAMPLES=()
+for BAM in ${BAM_FILES}
+do
+    BAM_NODIR=$(echo ${BAM} | sed -r "s/(.*\/)//")  # captures everything to last slash
+    FILE_NOEXT=$(echo ${BAM_NODIR} | sed -r "s/[.]bam//")
+    SAMPLES+=(${FILE_NOEXT})
+done
+
 plotCorrelation --corData "${OUTDIR}${NAME}.npz" \
+--labels ${SAMPLES[@]} \
 --corMethod pearson \
 --whatToPlot heatmap \
+--plotNumbers \
 --plotFile "${OUTDIR}${NAME}.pdf" \
 --skipZeros \
+--removeOutliers

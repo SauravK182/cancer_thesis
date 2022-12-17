@@ -24,7 +24,7 @@ coldata$Condition <- factor(paste0(coldata$Culture, coldata$Type))
 # dge.results <- lfcShrink(canc.dge, type = "normal", contrast = c("Type", "MET", "PRT"), alpha = 0.05, lfcThreshold = 0)
 # plotMA(dge.results)
 
-test.dge.rod <- dge_analysis(features, coldata, formula.vec = c("Condition"), lfc = 0)
+test.dge.rod <- dge_analysis(features, coldata, formula.vec = c("Condition"), lfc = 1)
 # test.dge.rod <- dge_analysis(features, coldata, lfc = 0)
 test.rod.list <- test.dge.rod[[1]]
 m1a.o.comp <- test.rod.list[[1]]

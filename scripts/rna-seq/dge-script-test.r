@@ -8,6 +8,9 @@ capan.panc <- test.dge[[1]][[1]]
 summary(capan.panc)
 plotMA(capan.panc)
 
+rld.ren <- rlog(test.dge[[2]])
+plotPCA(rld.ren, intgroup = "Culture")
+
 capan.panc.signif <- signifDE(capan.panc)
 capan.panc.signif.ens <- rownames(capan.panc.signif)
 

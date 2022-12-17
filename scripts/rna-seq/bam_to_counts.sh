@@ -33,9 +33,9 @@ BAM_LIST=$(ls *.bam)
     # Else, call featureCounts without -p to indicate single-end reads
 if [ ${FLAG} == "pe" ]
 then
-    featureCounts -p -a ${GTF_FILE} -o "${OUT_DIR}${OUTNAME}" ${BAM_LIST}
+    featureCounts -T 6 -p -a ${GTF_FILE} -o "${OUT_DIR}${OUTNAME}" ${BAM_LIST}
 else
-    featureCounts -a ${GTF_FILE} -o "${OUT_DIR}${OUTNAME}" ${BAM_LIST}
+    featureCounts -T 6 -a ${GTF_FILE} -o "${OUT_DIR}${OUTNAME}" ${BAM_LIST}
 fi
 
 # Run MultiQC to aggregate report from .summary files
