@@ -11,7 +11,7 @@
     # 3) bins for multiBamSummary
     # 4) Directory to place coverage matrix from multiBamSummary and for plotCorrelations output
     # 5) Name of matrix output + heatmap pdf
-# Usage: bash ~/project/scripts/rna-seq/rnaseq_align.sh [-f <bam-files> | -d <bam-dir>] <bins> <deeptools-outdir> <matrix-pdf-name>
+# Usage: bash ~/project/scripts/chip-seq/repro_check.sh [-f <bam-files> | -d <bam-dir>] <bins> <deeptools-outdir> <matrix-pdf-name>
 #########################
 
 # Initialize variables to avoid contamination from env vars
