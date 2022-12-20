@@ -9,7 +9,7 @@
 #########################
 
 
-arg0=$(basename "$0" .sh)   # Removes leading directory and trailing suffix
+arg0="bash $(basename "$0" .sh).sh"   # (basename arg suffix) removes leading directory of arg and trailing suffix
 blnk=$(echo "$arg0" | sed 's/./ /g')
 
 # $* means space separated string of all arguments
@@ -44,7 +44,7 @@ help() {
     echo "  -i | --input           Pass input directory. With flag --files on, will assume a list of files for peak calling."
     echo "                         Assumes the input control file(s) are included with the list/dir if --control not specified."
     echo
-    echo "  -c | --control         Input control file(s). If not specified, will assume the input controls are in --input."
+    echo "  -c | --control         Input control file(s). If not specified, will assume the input control(s) are in --input."
     echo "                         Note this script assumes all input control files have 'input' in their name."
     echo
     echo "  -o | --outdir          Output directory for files produced by MACS2."
@@ -82,9 +82,9 @@ flags() {
         case "$1" in        # will repeatedly loop the first positional argument through these patterns to find a match - almost like else if
         (-i|--input)
             shift   # consume the flag
-            [ $# = 0 ] && error "No input files/directory specified"    # && only does cmd 2 if cmd 1 was successful
+            [ $# = 0 ] && error "No input files/directory specified"    # && only does cmd 2 if cmd 1 was successful - effectively an if statement
             INPUT=()
-            while [[ "$1" != -* ]]      # in order to capture multiple files, keep adding filenames until we reach next flag
+            while [[ "$1" != -* ]] && [ ! -z "$1" ]     # in order to capture multiple files, keep adding filenames until we reach next flag
             do                          # Next flag starts with -, use globstar -* to indicate we have reached the next parameter
                 INPUT+=("$1")           # See http://mywiki.wooledge.org/BashFAQ/031 for [ ] vs. [[ ]]
                 shift
@@ -93,8 +93,8 @@ flags() {
             shift
             [ $# = 0 ] && error "Must specify input control files if using -c"
             CONTROL=()
-            while [[ "$1" != -* ]]
-            do
+            while [[ "$1" != -* ]] && [ ! -z "$1" ]
+            do                          # include [ ! -z "$1" ] to account for if flag is the last flag specified - do not want while loop to go on forever
                 CONTROL+=("$1")
                 shift
             done;;
@@ -140,7 +140,7 @@ flags() {
 
 flags "$@"      # call flags with argument list
 
-# Use || for "or" in bash - will only execute second command if first never completes
+# Use || for "or" in bash - will only execute second command if first fails
 # -z checks if a variable is unset or set to empty string ""
 # If any of the required variables are unset (user did not specify), print usage and quit
 if [ -z $INPUT ] || [ -z $OUTDIR ] || [ -z $REPORTDIR ]
@@ -157,6 +157,7 @@ fi
 # List all parameters for user (may remove in future iterations)
 echo
 echo "input is ${INPUT[@]}"
+echo "control is ${CONTROL[@]}"
 echo "isfile is $ISFILE"
 echo "isbroad is $ISBROAD"
 echo "isnarrow is $ISNARROW"
@@ -180,9 +181,16 @@ else
     BAM_FILES=${INPUT}*.bam
 fi
 
-# Get input control file(s) and separate from treatment files
-CONTROL=()
-TREATMENT=()
+# If user specified control files (i.e., CONTROL is not empty), save control files
+    # In this case, CONTROL is an array based on how the flags were grabbed
+# Else, parse the input control files from BAM_FILES, separate into TREATMENT and INPUT_CONTROL
+if [ ! -z $CONTROL ]
+then
+    INPUT_CONTROL=${CONTROL[@]}
+
+else
+
+
 for FILE in $BAM_FILES
 do
     if [[ $FILE == *input*]]    # if "input" is in the name of the file, add file to the input control array

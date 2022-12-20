@@ -3,13 +3,13 @@
 # Use file("stdin") to read from stdin
 input <- read.table(file("stdin"))
 
-# Get rows where first col is chrom MT or non-canonical chrom (contains GL)
+# Get rows where first col is non-canonical chrom (contains GL)
 input.index <- grep("GL.*", input$V1)
 input.subset <- input[input.index, ]
 
 # For idxstats, 1st col is contig, 2nd col is length, 3rd col is num reads
-non.canonical <- sum(input.subset$V3)
 non.canonical.length <- sum(input.subset$V2)
+non.canonical <- sum(input.subset$V3)
 
 # Create row entry for new df
 non.canonical.df <- data.frame(V1 = "Non-canonical",
