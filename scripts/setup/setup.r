@@ -7,6 +7,7 @@ library(EnsDb.Hsapiens.v79)
 main.data.dir <- "D:/SK/data"
 ren.data.dir <- "ren-panc"
 rod.data.dir <- "rod-rcc"
+cai.data.dir <- "cai-bc"
 rna.data.dir <- "rna-seq/aligned"
 
 # Scripts directory
