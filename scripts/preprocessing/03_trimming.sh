@@ -31,6 +31,7 @@ echo -e "Current directory of FASTQ files is: ${FASTQ_DIR}"
     # Use parameter expansion ${file#*.} to delete everything up to and including first period
     # Save this + leading period as file extension
 # file_fullname will do this programmatically and will only create global variable EXT
+# See https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html for more
 file_fullname () {
     local FILE_PREFIX=${1}
     local FULLNAMES=($(ls ${FILE_PREFIX}*))
