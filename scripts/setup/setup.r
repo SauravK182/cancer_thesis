@@ -2,6 +2,7 @@
 library(tidyverse)
 library(DESeq2)
 library(EnsDb.Hsapiens.v79)
+library(DiffBind)
 
 # Set up data directories
 main.data.dir <- "D:/SK/data"
