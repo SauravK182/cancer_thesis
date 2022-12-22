@@ -93,6 +93,11 @@ ren.contrast <- dba.contrast(ren.counts.norm,
 # Perform DE analysis - by default, runs DESeq2-based analysis
 ren.analysis <- dba.analyze(ren.contrast)
 dba.show(ren.analysis, bContrasts = TRUE)
+ren.DB <- dba.report(ren.analysis)
+# Note that for dba.report, one can pass a LFC threshold which will act similarly to DESeq2
+# Namely, that the hypothesis test will be conducted for |LFC| > threshold, and p-values will be adjusted accordingly
+
+# See https://support.bioconductor.org/p/79725/ for more
 
 # Out of 39269 sites, 23847 were found to be differentially enriched for H3K27ac b/w PANC-1 and CAPAN-1
 # Note however, this was just a preliminary analysis of going through the steps in the vignette, and
