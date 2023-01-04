@@ -29,12 +29,19 @@ library(gprofiler2)
 This section contains the summary for each differential expression call done for lab-group aggregates. Included is the total number of genes deemed to be significantly up- and down-regulated at $padj < 0.05$ for alternative hypothesis $\text{LFC} \neq 0$.
 
 ## Pancreatic cancer
-Summary for Ren et al., CAPAN-1 (metastatic pancreatic cancer to liver) vs. PANC-1 (primary tumor):
+Design matrix and summary for Ren et al., CAPAN-1 (metastatic pancreatic cancer to liver) vs. PANC-1 (primary tumor):
 ```{r}
+coldata.ren
 summary(capan.panc)
 ```
 
 ## Clear cell renal cell carcinoma (ccRCC)
+Design matrix for Rodrigues et al. ccRCC data:
+```{r}
+coldata.rod
+```
+Here, the formula called for `DESeq` was `~ Condition`. I.e., all data produced from this lab was pooled, and pairwise analysis was done for DGE calling.
+
 Rodrigues et al., 786-M1A (metastatic ccRCC to lung) vs. 786-O (parent primary tumor):
 ```{r}
 summary(m1a.o.comp)
@@ -46,6 +53,12 @@ summary(lm.rc.comp)
 ```
 
 ## Triple negative breast cancer
+Design matrix for Cai et al. breast cancer data:
+```{r}
+coldata.cai
+```
+Here, the formula called for `DESeq` was `~ Culture`. Similarly to the design with Rodrigues et al., pairwise analysis was done for DGE calling.
+
 Cai et al., BrM (metastatic breast cancer to brain) vs. MDA-MB-231 (parent primary tumor):
 ```{r}
 summary(brain.vs.primary)
