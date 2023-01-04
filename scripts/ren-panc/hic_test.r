@@ -2,9 +2,17 @@ library(strawr)
 library(tidyverse)
 library(HiCcompare)
 
-# Load dataset directory/ancillary files
-myScripts <- file.path("C:", "Users", "jvons", "Documents", "NCF", "Thesis", "Scripts")
-source(paste(myScripts, "setup.r", sep = "/"))
+# Load dataset directory
+myData <- file.path("D:/SK/data/ren-panc/hic")
+capan.1.test <- file.path(myData, "Capan-1/Capan-1.chr1.hic")
+
+# Use straw() to read in the test file with KR normalization
+capan.df <- straw(fname = capan.1.test,
+                  norm = "KR",
+                  chr1loc = "1",
+                  chr2loc = "1",
+                  unit = "BP",
+                  binsize = 5000)
 
 # Read Capan-1 Hi-C files into R
 ## Pre-create master list, which will be a list of 3 lists
