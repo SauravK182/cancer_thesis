@@ -15,7 +15,7 @@ setwd(file.path(project.dir, ren.dir, rna.dir))
 # Read in featureCounts file
 ## Skip first line, which contains the command used
 featurecounts.txt <- file.path(ren.data.dir, rna.data.dir, "ren_rna_rawcounts.txt")
-featurecounts <- read.delim("ren_rna_rawcounts.txt", header = TRUE, skip = 1)
+featurecounts <- read.delim(featurecounts.txt, header = TRUE, skip = 1)
 
 # First column to the right of length is where the counts start
 ## Counts go to end of matrix - extract these cols only!
@@ -43,8 +43,11 @@ ren.dds <- DESeqDataSetFromMatrix(countData = counts.df,
 keepCount <- rowSums(counts(ren.dds)) >= 10
 ren.dds <- ren.dds[keepCount, ]
 ren.dge <- DESeq(ren.dds)
-res <- lfcShrink(ren.dge, contrast = c("Culture", "CAPAN1", "PANC1"), type = "normal")
 
+# To use controlled generation of results table (e.g., alpha level), first create results, then use lfcShrink
+# See https://support.bioconductor.org/p/115242/
+res <- results(ren.dge, contrast = c("Culture", "CAPAN1", "PANC1"), alpha = 0.05, lfcThreshold = 0)
+res.shrunk <- lfcShrink(ren.dge, res = res, contrast = c("Culture", "CAPAN1", "PANC1"), type = "normal")
 # Save size factors
 ren.sf <- sizeFactors(ren.dge)
 ren.sf

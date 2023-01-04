@@ -1,0 +1,191 @@
+---
+title: "Exploratory Analysis of DESeq2 Results"
+author: "Saurav Kiri"
+date: '`r format(Sys.time(), "Last modified: %d %b %Y")`'
+output:
+    bookdown::gitbook:
+        self_contained: true
+        split_by: none
+        sharing: null
+        config:
+          toc:
+            collapse: none
+---
+
+# Initialize Workspace
+Loading the saved workspace image containing all differential expression runs and saved significant genes per experiment:
+```{r, warning = FALSE, message = FALSE}
+# See http://bioconductor.org/packages/release/bioc/html/ReportingTools.html for future report generation
+load("dge.RData")
+library(tidyverse)
+library(DESeq2)
+library(EnsDb.Hsapiens.v79)
+library(DiffBind)
+library(UpSetR)
+library(gprofiler2)
+```
+
+# DGE Call Summaries
+This section contains the summary for each differential expression call done for lab-group aggregates. Included is the total number of genes deemed to be significantly up- and down-regulated at $padj < 0.05$ for alternative hypothesis $\text{LFC} \neq 0$.
+
+## Pancreatic cancer
+Summary for Ren et al., CAPAN-1 (metastatic pancreatic cancer to liver) vs. PANC-1 (primary tumor):
+```{r}
+summary(capan.panc)
+```
+
+## Clear cell renal cell carcinoma (ccRCC)
+Rodrigues et al., 786-M1A (metastatic ccRCC to lung) vs. 786-O (parent primary tumor):
+```{r}
+summary(m1a.o.comp)
+```
+
+Rodrigues et al., OS-LM1 (metastatic ccRCC to lung) vs. OS-RC2 (parent primary tumor):
+```{r}
+summary(lm.rc.comp)
+```
+
+## Triple negative breast cancer
+Cai et al., BrM (metastatic breast cancer to brain) vs. MDA-MB-231 (parent primary tumor):
+```{r}
+summary(brain.vs.primary)
+```
+
+Cai et al., LM (metastatic breast cancer to lung) vs. MDA-MB-231 (parent primary tumor):
+```{r}
+summary(lung.vs.primary)
+```
+
+Cai et al., organotropic comparison (brain metastasis vs. lung metastasis)
+```{r}
+summary(brain.vs.lung)
+```
+
+# MA and PCA plots
+This section contains per group, a PCA plot showing clustering of RNA-seq libraries and an MA plot per comparison. Volcano plots from the `dge_analysis.r` script are also included.
+
+## Pancreatic cancer
+```{r, fig.cap = "PCA plot showing clustering of pancreatic RNA-seq libraries by cell line."}
+rld.ren <- rlog(ren.dge[[2]])
+plotPCA(rld.ren, intgroup = "Culture")
+```
+
+```{r, fig.cap = "MA plot for CAPAN-1 vs. PANC-1 DGE call. Dots colored blue are identified as significantly differentially expressed at a FDR-adjusted cutoff of 0.05"}
+plotMA(capan.panc, ylim = c(-3, 3))
+```
+
+```{r, warning = FALSE, fig.height = 8, fig.width = 8, fig.cap = "Volcano plot showing significantly DE genes for CAPAN-1 vs. PANC-1; red indicates upregulated genes (LFC > 0), blue indicates downregulated genes (LFC < 0)."}
+volcano.plot(capan.panc)
+```
+
+## Clear cell renal cell carcinoma
+```{r, fig.cap = "PCA plot showing clustering of ccRCC cell lines (786 and OS family) by cell line."}
+rld.rod <- rlog(dge.rod[[2]])
+plotPCA(rld.rod, intgroup = "Condition")
+```
+
+```{r, fig.cap = "MA plot for 786-M1A vs. 786-O DGE call. Dots colored blue were identified as significantly DE at alpha = 0.05."}
+plotMA(m1a.o.comp, ylim = c(-3, 3))
+```
+
+```{r, fig.cap = "MA plot for OS-LM1 vs. OS-RC-2 DGE call."}
+plotMA(lm.rc.comp, ylim = c(-3, 3))
+```
+
+```{r, warning = FALSE, fig.height = 8, fig.width = 8, fig.cap = "Volcano plot for 786-M1A vs. 786-O DGE call. Red indicates upregulated genes, blue indicates downregulated genes."}
+volcano.plot(m1a.o.comp)
+```
+
+```{r, warning = FALSE, fig.height = 8, fig.width = 8, fig.cap = "Volcano plot for OS-LM1 vs. OS-RC-2 DGE call. Red indicates upregulated genes, blue indicates downregulated genes."}
+volcano.plot(lm.rc.comp)
+```
+
+## Triple negative breast cancer
+```{r, fig.cap = "PCA plot showing clustering of metastatic breast cancer lines by tumor type."}
+rld.cai <- rlog(cai.dge.obj)
+plotPCA(rld.cai, intgroup = "Culture")
+```
+
+```{r, fig.cap = "MA plot for BrM vs. MDA-MB-231 (brain metastasis vs. primary breast cancer) DGE call."}
+plotMA(brain.vs.primary)
+```
+
+```{r, fig.cap = "MA plot for LM2 vs. MDA-MB-231 (lung metastasis vs. primary breast cancer) DGE call."}
+plotMA(lung.vs.primary)
+```
+
+```{r, fig.cap = "MA plot for organotropic comparison (BrM vs. LM2) DGE call."}
+plotMA(brain.vs.lung)
+```
+
+```{r, warning = FALSE, fig.height = 8, fig.width = 8, fig.cap = "Volcano plot for BrM vs. MDA-MB-231 DGE call. Red indicates upregulated genes, blue indicates downregulated genes."}
+volcano.plot(brain.vs.primary)
+```
+
+```{r, warning = FALSE, fig.height = 8, fig.width = 8, fig.cap = "Volcano plot for LM2 vs. MDA-MB-231 DGE call. Red indicates upregulated genes, blue indicates downregulated genes."}
+volcano.plot(lung.vs.primary)
+```
+
+```{r, warning = FALSE, fig.height = 8, fig.width = 8, fig.cap = "Volcano plot for BrM vs. LM2 DGE call. Red indicates upregulated genes, blue indicates downregulated genes."}
+volcano.plot(brain.vs.lung)
+```
+
+# Upset plots
+Given the overall DGE results, it is prudent to look at the intersection of DE results to see genes that are commonly dysregulated across metastatic cancers. To do this, a list of significant genes for each metastasis-primary tumor DGE call was isolated and an upset plot was made to visualize the size of each possible intersection.
+
+```{r, fig.height = 8, fig.width = 8, fig.cap = "Upset plot displaying the number of DE genes identified per DGE call as well as the size of intersection between distinct DGE calls. Of note, 181 genes are identified as DE in all metastases."}
+dge.list.full <- list(panc = capan.panc,
+                      m1a_o = m1a.o.comp,
+                      lm_rc = lm.rc.comp,
+                      brain_mb = brain.vs.primary,
+                      lung_mb = lung.vs.primary)
+
+dge.list.signif <- lapply(dge.list.full, signifDE)
+dge.list.signif.ens <- lapply(dge.list.signif, rownames)
+
+# Make upset plot
+# See https://stackoverflow.com/questions/67094573/ for customizing upset plot with ComplexUpset
+listInput <- list(Pancreatic = dge.list.signif.ens[[1]],
+                  ccRCC_786 = dge.list.signif.ens[[2]],
+                  ccRCC_OS = dge.list.signif.ens[[3]],
+                  Brain_MB = dge.list.signif.ens[[4]],
+                  Lung_MB = dge.list.signif.ens[[5]])
+UpSetR::upset(fromList(listInput),
+              sets.bar.color = "#56B4E9")
+```
+
+From the above upset plot, we observe 181 genes that are misregulated in all metastatic cancers. However, the direction of misregulation may not be the same across all cancers. Therefore, we also look at upset plots for solely upregulated and downregulated genes as well, using the `splitDE` function in `dge_analysis.r`:
+
+```{r, fig.height = 8, fig.width = 8, fig.cap = "Upset plot displaying the number of DE genes identified to be upregulated as well as size of intersections between sets of upregulated genes. Only 12 genes are upregulated in all metastases."}
+dge.list.upreg <- lapply(dge.list.full, function(df) splitDE(df)[[1]])
+dge.list.downreg <- lapply(dge.list.full, function(df) splitDE(df)[[2]])
+dge.list.upreg.ens <- lapply(dge.list.upreg, rownames)
+dge.list.downreg.ens <- lapply(dge.list.downreg, rownames)
+
+UpSetR::upset(fromList(dge.list.upreg.ens),
+              sets.bar.color = "#56B4E9")
+```
+
+
+```{r, fig.height = 8, fig.width = 8, fig.cap = "Upset plot displaying the number of DE genes identified to be downregulated as well as size of intersections between sets of downregulated genes. Only 6 genes are upregulated in all metastases."}
+UpSetR::upset(fromList(dge.list.downreg.ens),
+              sets.bar.color = "#56B4E9")
+```
+
+Therefore, out of 181 genes found to be misregulated in all metastases, only 18 show uni-directional misregulation (12 "universally" upregulated, 6 "universally" downregulated).
+
+# GProfiler Gene Ontology Results
+To understand what gene networks or pathways (if any) are enriched in this sample of 181 genes, we use the `gprofiler2` package to perform interactive GO and pathway enrichment analysis:
+```{r, fig.cap = "GProfiler plot of the 181 'universally misregulated genes' showing gene ontology, KEGG pathway enrichment, and TF motif enrichment."}
+univ.misregulated <- purrr::reduce(listInput, intersect)
+misreg.gost <- gost(query = univ.misregulated,
+                    organism = "hsapiens",
+                    ordered_query = FALSE,
+                    multi_query = FALSE,
+                    significant = TRUE,
+                    user_threshold = 0.05,
+                    correction_method = "fdr")
+gostplot(misreg.gost, capped = TRUE, interactive = TRUE)
+```
+
+Some of the intriguing findings are the presence of developmental pathways and regulation of apoptosis in the biological process GO enrichment (orange) and the strong presence of extracellular/endomembrane system enrichment in the cellular components GO enrichment (green). Further enrichment analysis results will be forthcoming, including individual results for DE calls as well as results for genes near differentially bound H3K27ac or in regions that have switched A/B compartments.

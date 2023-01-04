@@ -17,6 +17,7 @@ txt2counts <- function(featurecounts.txt) {
 
 ensembl_to_gene <- function(ensembl.genes) {
     require(EnsDb.Hsapiens.v79)
+    # See https://stackoverflow.com/questions/28543517/ for converting ENSEMBL to HGNC
     geneIDs <- ensembldb::select(EnsDb.Hsapiens.v79,
                                  keys = ensembl.genes,
                                  keytype = "GENEID",
@@ -61,7 +62,7 @@ dge_analysis <- function(featurecounts,
                          contrasts = coldata[, colnames(coldata) == contrast.var] %>% levels(),
                          formula.vec = colnames(coldata),
                          alphaTest = 0.05,
-                         lfc = 2) {
+                         lfc = 0) {
     require(DESeq2)
 
     if (class(featurecounts) == "character") {
@@ -86,7 +87,7 @@ dge_analysis <- function(featurecounts,
     canc.dds <- DESeqDataSetFromMatrix(countData = counts.df,
                                     colData = design.mat,
                                     design = des.formula)
-    keepCount <- rowSums(counts(canc.dds)) >= 10
+    keepCount <- rowSums(counts(canc.dds) >= 10) >= ncol(counts.df) / 3
     canc.dds <- canc.dds[keepCount, ]
     canc.dge <- DESeq(canc.dds)
 
@@ -103,14 +104,16 @@ dge_analysis <- function(featurecounts,
     ## function(x) x[, i] will be iteratively applied to each element of the vector above
     ## and the return value will be placed in a list in the corresponding location
     contrasts <- lapply(seq_len(ncol(factorpairs.mat)), function(x) factorpairs.mat[, x])
-    # dge.results <- lapply(1:length(contrasts), function(x) results(canc.dge, contrast = c("Culture", contrasts[[x]]), alpha = alphaTest))
-
     dge.results <- lapply(1:length(contrasts),
-                          function(x) lfcShrink(canc.dge,
+                          function(x) lfcShrink(canc.dge,       # need to include call to results() to set alphaTest manually
+                                                res = results(  # for lfcShrink, alpha = 0.10
+                                                              canc.dge,
+                                                              contrast = c(contrast.var, contrasts[[x]]),
+                                                              alpha = alphaTest,
+                                                              lfcThreshold = lfc
+                                                ),
                                                 type = "normal",
-                                                contrast = c(contrast.var, contrasts[[x]]),
-                                                alpha = alphaTest,
-                                                lfcThreshold = lfc))
+                                                contrast = c(contrast.var, contrasts[[x]])))
 
     for (i in 1:length(dge.results)) {
         ensembl.genes <- rownames(dge.results[[i]])
@@ -120,19 +123,29 @@ dge_analysis <- function(featurecounts,
     return(list(dge.results, canc.dge))
 }
 
-# Keeps only significant DGE genes (p-adj < 0.05)
+# Keeps only significant DGE genes (`p-adj` < 0.05 by default)
 # Arguments:
-    # results: a DESeqResults object
+    # results: a `DESeqResults` object
     # threshold (optional): the p-adjusted threshold for significance. Default is 0.05
-# Return value: A DESeqResults object with only significant DE features
+# Return value: A `DESeqResults` object with only significant DE features
 signifDE <- function(results, threshold = 0.05) {
     i <- is.na(results$padj)
     res.nona <- results[!i, ]
     return(res.nona[res.nona$padj < threshold, ])
 }
 
-#
-volcano.plot <- function(de.results, lfc = 2, threshold = 0.05) {
+# Splits a `DESeqResults` object into genes identified to be upregulated and downregulated
+# Arguments:
+    # `...` - arguments to pass to `signifDE()`
+# Return value: A list of two `DESeqResults` objects containing 1) the upregulated genes, and 2) the downregulated genes, respectively
+splitDE <- function(...) {
+    signif.res <- signifDE(...)
+    upreg.res <- signif.res[signif.res$log2FoldChange > 0, ]
+    downreg.res <- signif.res[signif.res$log2FoldChange < 0, ]
+    return(list(upreg.res, downreg.res))
+}
+
+volcano.plot <- function(de.results, lfc = 0, threshold = 0.05) {
     require(ggplot2)
 
     deseq.results <- as.data.frame(de.results)
@@ -146,7 +159,6 @@ volcano.plot <- function(de.results, lfc = 2, threshold = 0.05) {
            geom_point(data = deseq.results[deseq.results$"Downregulated"  == TRUE, ], size = 2, colour = "#000099") +
            xlab("log2 fold change") +
            ylab("-log10 p-value adjusted") +
-           ggtitle("My Title") +
            scale_x_continuous() +
            scale_y_continuous(limits = c(0, 15)) +
            theme_bw() +
