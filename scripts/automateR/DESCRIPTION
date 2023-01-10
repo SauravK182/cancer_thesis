@@ -1,0 +1,27 @@
+Package: automateR
+Title: A Cool Package to Automate Your Genomic Analyses
+Version: 0.0.0.9000
+Authors@R: 
+    person("Saurav", "Kiri", , "saurav.kiri19@ncf.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Personal functions created by me that speed up repeated
+    differential gene expression and differential enrichment analyses with the
+    DESeq2 and DiffBind packages. This package contains some (hopefully) useful
+    functions that can be used to automate the process (in part) of repeatedly running
+    bioinformatics pipelines to determine significant changes in the molecular state
+    of gene expression.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+    stats,
+    utils
+Depends: 
+    tidyverse,
+    UpSetR,
+    EnsDb.Hsapiens.v79,
+    ChIPpeakAnno,
+    DESeq2,
+    DiffBind,
+
