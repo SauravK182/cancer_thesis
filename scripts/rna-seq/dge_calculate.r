@@ -69,6 +69,8 @@ dge.list.full <- list(panc = capan.panc,
 
 dge.list.signif <- lapply(dge.list.full, signifDE)
 dge.list.signif.ens <- lapply(dge.list.signif, rownames)
+dge.list.signif.hgnc <- lapply(dge.list.signif.ens, ensembl_to_gene)
+signif.univ.ens <- purrr::reduce(dge.list.signif.ens, intersect)
 
 # Get upregulated and downregulated genes for each experiment
 dge.list.upreg <- lapply(dge.list.full, function(df) splitDE(df)[[1]])

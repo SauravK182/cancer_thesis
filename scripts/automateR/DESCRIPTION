@@ -24,4 +24,7 @@ Depends:
     ChIPpeakAnno,
     DESeq2,
     DiffBind,
-
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

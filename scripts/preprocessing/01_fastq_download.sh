@@ -31,7 +31,7 @@ while IFS=, read -r srr exp
 do
     # prefetch.2.8.0 had certification failure, use prefetch.3.0.0 instead to pre-cache SRR files
     echo -e "Currently working on ${srr}, with outfile name prefix ${exp}\n"
-    prefetch.3.0.0 --progress ${srr}
+    prefetch.3.0.0 --max-size 25g --progress ${srr}
 
     # Download FASTQ from fetched file
     fasterq-dump.3.0.0 --progress --force --outfile "${exp}.fastq" ${srr}
