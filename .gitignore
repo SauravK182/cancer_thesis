@@ -1,2 +1,7 @@
 /QC
 .Rproj.user
+.Rhistory
+*.RData
+.Ruserdata
+inst/doc
+.DS_store
