@@ -3,7 +3,7 @@ require(Rsamtools)
 
 # Get RPKM values for genes
 ## We're going to see if genes near changes in H3K27ac occupancy
-## Have higher average RPKM within a sample
+## Have higher average RPKM compared to in the primary tumor
 
 # First, check with LFC values
 require(ChIPpeakAnno)
@@ -47,5 +47,6 @@ genes.bplot <- ggplot(data = data.df, aes(x = DiffExp, y = LogFC)) +
                             map_signif_level = TRUE,
                             test = "wilcox.test",
                             test.args = list(alternative = "two.sided", paired = FALSE)) +
-                theme_cowplot(font_size = 14, line_size = 1)
+                theme_cowplot(font_size = 14, line_size = 1) +
+                xlab("Change in H3K27ac occupancy proximal to TSS")
 genes.bplot

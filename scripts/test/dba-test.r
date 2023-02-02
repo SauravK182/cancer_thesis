@@ -57,7 +57,26 @@ ren.sample.sheet <- data.frame(SampleID = sample.id,
 
 ren.dba <- dba(sampleSheet = ren.sample.sheet)
 dba.plotHeatmap(ren.dba)       # produces correlation heatmap from cross-correlation of each row of binding mat
+# Can also use dba.plotPCA() to observe clustering of replicates
+    # Use argument `label =` to add labels to the PCA
 
+# MA plots of normalized and non-normalized data can be made as well with dba.plotMA
+
+ren.peaks <- dba.peakset(ren.dba, bRetrieve = TRUE)
+
+# Interestingly, for some reason, when specifying only blacklist, it uses the proper blacklist (GrCH37)
+# But when I also specify greylist = TRUE, it states the genome build is BSgenome.Hsapiens.1000genomes.hs37d5 and fails to find a blacklist
+# Must investigate further
+# Building greylist here is probably redundant, since DiffBind does this when analyzing regardless
+# The coverage removed from greylists is about identical to that done with DiffBind
+blacklist.test <- dba.blacklist(ren.dba, blacklist = FALSE, greylist = TRUE)
+blacklist.test2 <- dba.blacklist(blacklist.test, blacklist = DBA_BLACKLIST_GRCH37, greylist = FALSE)
+
+# It seems that calling blacklist and greylists separately as above does the job quite well
+# 75 consensus peaks were removed by enforcing both the blacklists and greylists
+
+# One can use dba.overlap() to examine the number of consensus peaks overlapping in 1, 2,..., n samples
+# Serves as a good QC plot as well - should be a shallow drop off, otherwise indicates lots of noise/outliers
 # See the following two Bioconductor posts for choosing size for summits()
 # https://support.bioconductor.org/p/100482/
 # https://support.bioconductor.org/p/100170/
@@ -72,28 +91,22 @@ summary(ren.dba$binding[, 3] - ren.dba$binding[, 2])
 boxplot(ren.dba$binding[, 3] - ren.dba$binding[, 2])
 # Here, the minimum is 199 bp and first quartile is 1583 bp - very diffuse peak widths
 
-# For now, use default when creating the dba.count object
-
-# Next step: calculate binding matrix with scores based on read counts for every sample
-ren.counts <- dba.count(ren.dba)
+blacklist.test.count <- dba.count(blacklist.test2, summits = 500)   # Rory said he had previously used 500 for wide histone marks
+blacklist.test.norm <- dba.normalize(blacklist.test.count,
+                                     normalize = DBA_DESEQ2,
+                                     library = DBA_NORM_NATIVE)
+blacklist.norm <- dba.normalize(blacklist.test.norm, bRetrieve = TRUE)
 # FrIPs are close to 10% - ENCODE recommends FRiP at least 1% (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3431496/)
 
-# Now normalize with dba.normalize
-ren.counts.norm <- dba.normalize(ren.counts, 
-                                 method = DBA_DESEQ2, 
-                                 normalize = DBA_NORM_NATIVE,
-                                 library = DBA_LIBSIZE_FULL)
-ren.norm <- dba.normalize(ren.counts.norm, bRetrieve = TRUE) # bRetrieve = TRUE will have normalization info returned
+# For test blacklist + greylist
+bltest.contrast <- dba.contrast(blacklist.test.norm,
+                                 design = ~ Condition,
+                                 contrast = c("Condition", "metastasis", "primary"))
 
-# Set up model design and contrast
-ren.contrast <- dba.contrast(ren.counts.norm,
-                             design = ~ Condition,
-                             contrast = c("Condition", "primary", "metastasis"))
-
-# Perform DE analysis - by default, runs DESeq2-based analysis
-ren.analysis <- dba.analyze(ren.contrast)
-dba.show(ren.analysis, bContrasts = TRUE)
-ren.DB <- dba.report(ren.analysis)
+# For test blacklist + greylist
+bltest.analysis <- dba.analyze(bltest.contrast)
+bltest.DB <- dba.report(bltest.analysis)        
+# This time, 24550 peaks out of 39194 are DE - about 62.6% DE
 # Note that for dba.report, one can pass a LFC threshold which will act similarly to DESeq2
 # Namely, that the hypothesis test will be conducted for |LFC| > threshold, and p-values will be adjusted accordingly
 
@@ -105,3 +118,16 @@ ren.DB <- dba.report(ren.analysis)
 # Important note: CAPAN-1 and PANC-1 were isolated from different patients!
     # PANC-1 isolated from 56 yo white male (epithelioid carcinoma)
     # CAPAN-1 isolated from 40 yo white male (adenocarcinoma)
+
+# MA plots post differential enrichment calling are also supported which will highlight intervals identified to be DE
+# DiffBind also innately supports volcano plots with dba.plotVolcano()
+# Additionally, the dba.plotHeatmap() also supports the results of DE enrichment via the `contrast` argument
+    # to use only the intervals identified as DE
+# See vignette also for concentration heatmaps
+
+#----TEST FUNCTION----
+ren.test <- db_analysis(ren.sample.sheet,
+                        contrast.var = "Condition",
+                        summit.val = 500,
+                        contrasts = list(c("metastasis", "primary")))
+ren.res <- ren.test[[3]][[1]]   # results seem to be the same as when I do it manually. n1
