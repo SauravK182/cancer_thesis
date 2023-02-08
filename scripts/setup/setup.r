@@ -5,7 +5,7 @@
 # library(DiffBind)
 # library(UpSetR)
 # library(ChIPpeakAnno)
-library(automateR)  # custom package!
+library(automateR)  # custom package
 
 # Set up data directories
 main.data.dir <- "D:/SK/data"

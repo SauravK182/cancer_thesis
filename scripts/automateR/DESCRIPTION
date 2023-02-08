@@ -20,10 +20,14 @@ Imports:
 Depends: 
     tidyverse,
     UpSetR,
+    EnsDb.Hsapiens.v75,
     EnsDb.Hsapiens.v79,
     ChIPpeakAnno,
     DESeq2,
     DiffBind,
+    clusterProfiler,
+    msigdbr,
+    org.Hs.eg.db,
 Suggests: 
     knitr,
     rmarkdown
