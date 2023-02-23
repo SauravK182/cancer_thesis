@@ -1,10 +1,3 @@
-# Load necessary packages
-# library(tidyverse)
-# library(DESeq2)
-# library(EnsDb.Hsapiens.v79)
-# library(DiffBind)
-# library(UpSetR)
-# library(ChIPpeakAnno)
 library(automateR)  # custom package
 
 # Set up data directories
@@ -22,7 +15,6 @@ rna.scripts.dir <- "rna-seq"
 setwd(main.data.dir)
 
 # Source necessary files
-# source(file.path(scripts.dir, rna.scripts.dir, "dge_analysis.r"))
-# source(file.path(scripts.dir, rna.scripts.dir, "dge_calculate.r"))
 load(file.path(scripts.dir, "rna-seq/dge.RData"))
 load(file.path(scripts.dir, "chip-seq/chip-dba.RData"))
+load(file.path(scripts.dir, "atac-seq/atac-dba.RData"))

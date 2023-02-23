@@ -53,3 +53,12 @@ cai.atac <- db_analysis(atac.cai.ss,
                         summit.val = 100,
                         contrasts = contrasts.list,
                         atac = TRUE)
+
+#-------ANNOTATE PEAKS--------
+ren.atac.anno <- anno_peak_gr37(dba.report(ren.atac[[3]][[1]]))
+cai.brm.atac.anno <- anno_peak_gr37(dba.report(cai.atac[[3]][[1]]))
+cai.lm.atac.anno <- anno_peak_gr37(dba.report(cai.atac[[3]][[2]]))
+
+anno.atac.list.full <- list(panc = ren.atac.anno,
+                            brain_mb = cai.brm.atac.anno,
+                            lung_mb = cai.lm.atac.anno)

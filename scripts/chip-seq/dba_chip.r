@@ -78,3 +78,17 @@ cai.chip <- db_analysis(cai.samplesheet,
                         contrast.var = "Tissue",
                         summit.val = 500,
                         contrasts = contrasts.list)
+
+
+#-------ANNOTATE PEAKS--------
+ren.chip.anno <- anno_peak_gr37(dba.report(ren.chip.res))
+rod.786.chip.anno <- anno_peak_gr37(dba.report(rod.chip[[3]][[1]]))
+rod.os.chip.anno <- anno_peak_gr37(dba.report(rod.chip[[3]][[2]]))
+cai.brm.chip.anno <- anno_peak_gr37(dba.report(cai.chip[[3]][[1]]))
+cai.lm.chip.anno <- anno_peak_gr37(dba.report(cai.chip[[3]][[2]]))
+
+anno.chip.list.full <- list(panc = ren.chip.anno,
+                       m1a_o = rod.786.chip.anno,
+                       lm_rc = rod.os.chip.anno,
+                       brain_mb = cai.brm.chip.anno,
+                       lung_mb = cai.lm.chip.anno)

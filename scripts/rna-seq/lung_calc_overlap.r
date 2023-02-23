@@ -49,4 +49,4 @@ overlap_signif <- function(deseq.interest, deseq.pop, nPerm = 10000) {
 
 }
 
-mda.m1a.overlap <- overlap_signif(lung.vs.primary, m1a.o.comp)
+mda.m1a.overlap <- overlap_signif(lung.vs.primary, m1a.o.comp, nPerm = 1e8)

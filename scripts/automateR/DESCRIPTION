@@ -26,6 +26,8 @@ Depends:
     DESeq2,
     DiffBind,
     clusterProfiler,
+    DOSE,
+    plyr,
     msigdbr,
     org.Hs.eg.db,
 Suggests: 

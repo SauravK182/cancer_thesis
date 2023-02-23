@@ -1,20 +1,45 @@
-prepare_gsea <- function(deseqObject, 
-                         rankBy = "log2FoldChange", 
-                         useSymbol = "ensembl",
+#' @title Prepare `DESeq` results for GSEA
+#'
+#' @description
+#' Will automatically create a ranked list of genes with proper identifiers from a `DESeq2 results` object for
+#' either `clusterProfiler` or `fgsea`. Utilizes org.Hs.eg.db for any necessary gene identifier conversions.
+#'
+#' @param deseqObject A `results` object from `DESeq2`, or any other valid data-frame like object that possesses
+#' a numerical ranking score and gene identifers
+#' @param rankBy Column name in the data frame to rank genes by. Default = "log2FoldChange".
+#' @param colSymbol Column name for the column in the data frame containing the gene identifiers.
+#' Note that these identifiers must be a valid keytype in the org.Hs.eg database. Default = "rownames" (i.e., gene
+#' identifiers are the rownames of the object).
+#' @param useSymbol Keytype for the gene identifiers housed in the column `colSymbol`. Must be a valid
+#' keytype that can be queried by org.Hs.eg.db. Default = "ENSEMBL"
+#' @param method Either `"cluterProfiler"` or `"fgsea"`, indicating which package will be used for downstream analysis.
+#' Default = "clusterProfiler"
+#' @param convertSymbol Boolean value indicating whether to convert symbols to the appropriate type for `clusterProfiler`
+#' or `fgsea`. Default = TRUE
+#'
+#' @return Named numeric vector sorted from highest to lowest `rankBy` stat. Names correspond to the gene IDs given the keytype
+#' required by `clusterProfiler` (Entrez ID) or `fgsea` (HGNC Symbol), respectively.
+#' @export
+#'
+#' @examples
+prepare_gsea <- function(deseqObject,
+                         rankBy = "log2FoldChange",
+                         colSymbol = "rownames",
+                         useSymbol = "ENSEMBL",
                          method = "clusterProfiler",
                          convertSymbol = TRUE) {
     # Ensure the rankBy variable is a column name of the df
-    if (! (rankBy %in% colnames(deseqObject)) | ! (class(deseqObject[, rankBy]) == "numeric")) {
+    if (! (rankBy %in% colnames(as.data.frame(deseqObject))) | (class(as.data.frame(deseqObject)[, rankBy]) != "numeric")) {
         stop("Parameter rankBy must point to a numeric column in deseqObject for GSEA ranking.")
     }
 
     # If user passed "ensembl", make a column from the ensembl row; else, save the colname
-    if (tolower(useSymbol) == "ensembl") {
-        symbol.col <- "Ensembl"
+    if (tolower(colSymbol) == "rownames") {
+        symbol.col <- useSymbol
         deseqObject <- deseqObject %>%
                         as.data.frame() %>%
                         rownames_to_column(symbol.col)
-    } else if (useSymbol %in% colnames(deseqObject)) {
+    } else if (colSymbol %in% colnames(deseqObject)) {
         symbol.col <- useSymbol
     } else {
         stop("useSymbol must either be set to 'ensembl' or a column name containing gene symbols for annotation.")
@@ -32,8 +57,10 @@ prepare_gsea <- function(deseqObject,
     if (tolower(method) == "clusterprofiler") {
         if (tolower(useSymbol) == "ensembl") {
             keytype <- "ENSEMBL"
+        } else if (useSymbol %in% keytypes(org.Hs.eg.db)) {
+            keytype <- useSymbol
         } else {
-            keytype <- "SYMBOL"
+            stop("Must provide a valid keytype for use in org.Hs.eg.db with parameter useSymbol.")
         }
 
         if (convertSymbol) {
@@ -46,8 +73,10 @@ prepare_gsea <- function(deseqObject,
     } else if (tolower(method) == "fgsea") {
         if (tolower(useSymbol) == "ensembl") {
             keytype <- "ENSEMBL"
+        } else if (useSymbol %in% keytypes(org.Hs.eg.db)) {
+            keytype <- useSymbol
         } else {
-            keytype <- "ENTREZID"
+            stop("Must provide a valid keytype for use in org.Hs.eg.db with parameter useSymbol.")
         }
 
         if (convertSymbol) {
@@ -65,11 +94,25 @@ prepare_gsea <- function(deseqObject,
     return(ranked.list)
 }
 
+#' @title Run `clusterProfiler` GSEA
+#' 
+#' @description
+#' Simple wrapper function for the `GSEA` function in the `clusterProfiler` package. Utilizes `msigdbr` to read in
+#' a hallmark set and run `GSEA` with a pre-ranked list (which can be constructed with the `prepare_gsea()` function).
+#'
+#' @param ranked.list Ranked list in the form of a named numeric vector, sorted in descending order with Entrez ID identifiers.
+#' @param category Category from MSigDB to use by `GSEA()`. Will be fetched using `msigdbr()`.
+#' @param ... Additional arguments to pass to `GSEA()`.
+#'
+#' @return `gseaResult` object containing the results of the call to `GSEA()`.
+#' @export
+#'
+#' @examples
 run_gsea_cp <- function(ranked.list, category, ...) {
     # Load in desired gene set with msigdbr
     gene.set <- msigdbr(species = "Homo sapiens", category = category) %>%
         dplyr::select(gs_name, entrez_gene)
-    
+
     # Run GSEA with desired arguments
     gsea <- GSEA(ranked.list, TERM2GENE = gene.set, ...)
     return(gsea)
@@ -78,15 +121,22 @@ run_gsea_cp <- function(ranked.list, category, ...) {
 # FROM YU ET AL.
 # Function included here from Yu lab source code (https://github.com/YuLab-SMU/clusterProfiler/blob/master/R/compareCluster.R)
 # Due to issues with package/R versions
-compareCluster <- function(geneClusters, 
-                           fun="enrichGO", data='', 
+
+#' @title Yu Lab's compareCluster
+#' 
+#' @description compareCluster function from the Yu Lab (https://github.com/YuLab-SMU/clusterProfiler/blob/master/R/compareCluster.R).
+#' Imported in this package due to versioning issues. See the above link for more information. All credit to Yu et al.
+#' 
+#' @export
+compareCluster <- function(geneClusters,
+                           fun="enrichGO", data='',
                            source_from=NULL, ...) {
-  
+
    if(is.character(fun)){
      if(fun %in% c("groupGO", "enrichGO", "enrichKEGG",
                    "gseGO", "gseKEGG", "GSEA", "gseWP")){
        fun <- utils::getFromNamespace(fun, "clusterProfiler")
-     } else if(fun %in% c("enrichDO", "enrichDGN", "enrichDGNv", 
+     } else if(fun %in% c("enrichDO", "enrichDGN", "enrichDGNv",
                           "enrichNCG", "gseDO", "gseNCG", "gseDGN")){
        fun <- utils::getFromNamespace(fun , "DOSE")
      } else if(fun %in% c("enrichPathway", "gsePathway")){
@@ -99,10 +149,10 @@ compareCluster <- function(geneClusters,
          source_env <- loadNamespace(source_from)
        }
        # If fun is in global or any loaded package, this will get it
-       # This assumes that a user will actually load said package. 
+       # This assumes that a user will actually load said package.
        fun <- get(fun, envir = source_env)
      }
-    
+
    }
 
 
@@ -114,8 +164,8 @@ compareCluster <- function(geneClusters,
             genes.var = all.vars(geneClusters)[1]
             n.var = length(all.vars(geneClusters))
             # For formulas like x~y+z
-            grouping.formula = gsub('^.*~', '~', 
-                       as.character(as.expression(geneClusters)))   
+            grouping.formula = gsub('^.*~', '~',
+                       as.character(as.expression(geneClusters)))
             n.group.var = length(all.vars(formula(grouping.formula)))
             geneClusters = dlply(.data=data, formula(grouping.formula),
                                  .fun=function(x) {
@@ -134,8 +184,8 @@ compareCluster <- function(geneClusters,
     clProf <- llply(geneClusters,
                     .fun=function(i) {
                         x=suppressMessages(fun(i, ...))
-        
-                        if (inherits(x, c("enrichResult", 
+
+                        if (inherits(x, c("enrichResult",
                                           "groupGOResult", "gseaResult"))){
                             as.data.frame(x)
                         }
@@ -156,7 +206,7 @@ compareCluster <- function(geneClusters,
     if (is.data.frame(data) && grepl('+', grouping.formula)) {
         groupVarName <- strsplit(grouping.formula, split="\\+") %>% unlist %>%
             gsub("~", "", .) %>% gsub("^\\s*", "", .) %>% gsub("\\s*$", "", .)
-        groupVars <- sapply(as.character(clProf.df$Cluster), 
+        groupVars <- sapply(as.character(clProf.df$Cluster),
                             strsplit, split="\\.") %>% do.call(rbind, .)
         for (i in seq_along(groupVarName)) {
             clProf.df[, groupVarName[i]] <- groupVars[,i]
@@ -173,14 +223,14 @@ compareCluster <- function(geneClusters,
                .call = match.call(expand.dots=TRUE)
                )
 
-    params <- modifyList(extract_params(args(fun)),
-                         extract_params(res@.call))
+    params <- modifyList(extract_params_yu(args(fun)),
+                         extract_params_yu(res@.call))
 
     keytype <- params[['keyType']]
     if (is.null(keytype)) keytype <- "UNKNOWN"
     readable <- params[['readable']]
     if (length(readable) == 0) readable <- FALSE
-    
+
     res@keytype <- keytype
     res@readable <- as.logical(readable)
     ## work-around for bug in extract_parameters -- it doesn't match default args
@@ -189,13 +239,14 @@ compareCluster <- function(geneClusters,
     return(res)
 }
 
-extract_params <- function(x) {
+#' @export
+extract_params_yu <- function(x) {
     y <- rlang::quo_text(x)
     if (is.function(x)) y <- sub('\nNULL$', '', y)
 
     y <- gsub('"', '', y) %>%
         ## sub(".*\\(", "", .) %>%
-        sub("[^\\(]+\\(", "", .) %>% 
+        sub("[^\\(]+\\(", "", .) %>%
         sub("\\)$", "", .) %>%
         gsub("\\s+", "", .)
 
@@ -218,6 +269,7 @@ extract_params <- function(x) {
 # USE FOR SLIGHTLY MODIFIED DOSE PLOT TO SHOW GSEA RESULTS
 # All credit due to Guanchuang Yu et al. - see https://rdrr.io/bioc/enrichplot/src/R/utilities.R#sym-ep_str_wrap
 # for ep_str_wrap and default_labler,
+#' @export
 ep_str_wrap <- function(string, width) {
     x <- gregexpr(' ', string)
     vapply(seq_along(x),
@@ -243,7 +295,7 @@ ep_str_wrap <- function(string, width) {
     )
 }
 
-
+#' @export
 default_labeller <- function(n) {
     function(str){
         str <- gsub("_", " ", str)
@@ -253,13 +305,22 @@ default_labeller <- function(n) {
 
 # Modified version of Enrichplot dotplot. See https://github.com/YuLab-SMU/enrichplot/blob/master/R/dotplot.R for original.
 # All credit to Guangchuang Yu et al.
+
+#' @title Modified dotplot for `gseaResult` objects
+#' 
+#' @description Dotplot modified from Yu et al.'s `clusterProfiler' to made more amenable to GSEA results.
+#' Instead of plotting `GeneRatio`, the `NES` is plotted as a horizontal bar plot and colored by `p-adjusted`.
+#' See https://github.com/YuLab-SMU/enrichplot/blob/master/R/dotplot.R for the original code. All credit
+#' to Yu et al.
+#' 
+#' @export
 dotplot_enrichResult_Col <- function(object, x = "NES", color = "p.adjust",
                              showCategory=10, size=NULL, split = NULL,
                              font.size=12, title = "", orderBy="x",
                              label_format = 30, decreasing=TRUE) {
 
     colorBy <- match.arg(color, c("pvalue", "p.adjust", "qvalue"))
-    
+
     if (inherits(object, c("enrichResultList", "gseaResultList"))) {
         ldf <- lapply(object, fortify, showCategory=showCategory, split=split)
         df <- dplyr::bind_rows(ldf, .id="category")
@@ -302,6 +363,16 @@ dotplot_enrichResult_Col <- function(object, x = "NES", color = "p.adjust",
 # Modified version of the dotplot for compareClusterResult objects
 # Colors by NES and uses reverse scale for p-adjusted size
 # Original at https://github.com/YuLab-SMU/enrichplot/blob/master/R/dotplot.R. All credit to Yu et al.
+
+#' @title Modified dotplot for `compareClusterResult` objects.
+#' 
+#' @description Dotplot modified from the `clusterProfiler` package to be more amenable to viewing
+#' GSEA results from the `compareCluster` package. Instead of the doplot being colored by `p-adjust` and
+#' sized by `GeneRatio`, the plot is colored by `NES` and sized by `p-adjust` for visibility in which
+#' processes are enriched vs. depleted in each phenotype. See https://github.com/YuLab-SMU/enrichplot/blob/master/R/dotplot.R
+#' for the original code. All credit to Yu et al.
+#' 
+#' @export
 dotplot_compareClusterResult_gsea <- function(object, x= "Cluster", colorBy="NES",
                                          showCategory=5, by="geneRatio", size="p.adjust",
                                          split=NULL, includeAll=TRUE,

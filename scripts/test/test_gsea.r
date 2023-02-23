@@ -109,6 +109,7 @@ cp.gsea <- GSEA(ranked.list.log, TERM2GENE = hallmark)
 head(cp.gsea)
 dotplot(cp.gsea, showCategory = 20)    # dotplot is nice, but doesnt show direction of enrichment
 
+require(DOSE)
 panc.gsea <- capan.panc %>%
     prepare_gsea() %>%
     run_gsea_cp(category = "H", nPermSimple = 10000, seed = FALSE)
@@ -121,9 +122,10 @@ gsea.list <- lapply(dge.list.full, prepare_gsea)
 require(plyr)
 test.compare <- compareCluster(geneClusters = gsea.list,
                                fun = "GSEA",
-                               TERM2GENE = hallmark)
-dotplot(test.compare, showCategory = 20)   # while all the below is important, updating enrichplot allows me to make a dotplot!
-dotplot.compareClusterResult(test.compare, showCategory = 20)
+                               TERM2GENE = hallmark,
+                               seed = TRUE)
+# dotplot(test.compare, showCategory = 20)   # while all the below is important, updating enrichplot allows me to make a dotplot!
+dotplot_compareClusterResult_gsea(test.compare, showCategory = 20)
 # however, wish to display NES instead of geneRatio
 
 

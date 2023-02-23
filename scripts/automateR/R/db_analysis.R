@@ -250,3 +250,33 @@ db_analysis <- function(sample.df,
     # Return the DBA object, counts object, and the results list
     return(list(dba.obj, dba.counts, dba.results))
 }
+
+
+#' @title Simple wrapper for `annotatePeakInBatch`
+#'
+#' @description
+#' Simple wrapper function for annotatePeakInBatch; will automatically take in a `GRanges` object and by default, annotate it
+#' for the gene with the nearest TSS on both strands, assuming the peak falls within +/- 2kb of the TSS.
+#'
+#' @param dba.res Any `GRanges` object, with gene data, including for instance, a results object from `DiffBind`
+#' @param annodata TSS or other gene data to use for `annotatePeakInBatch`. Default = `TSS.human.GRCh37`
+#' @param output Specified mechanism for searching for nearest TSS from interval data. See `annotatePeakInBatch` for more.
+#' Default = `nearestBiDirectionalPromoter`, which will report TSS's in both directions if the interval overlaps multiple TSS's.
+#' @param region Annotation range for interval annotation. Default = `c(-2000, 2000)` - i.e., 2kb window around the peak
+#' @param ... Any other parameter to be passed to `annotatePeakInBatch`
+#'
+#' @return Annotated GRanges object containing nearest TSS metadata for peaks within 2kb of one
+#' @export
+#'
+#' @examples
+anno_peak_gr37 <- function(dba.res, annodata = TSS.human.GRCh37,
+                           output = "nearestBiDirectionalPromoters",
+                           region = c(-2000, 2000), ...) {
+
+    anno.peak <- annotatePeakInBatch(dba.res,
+                                     AnnotationData = annodata,
+                                     output = output,
+                                     bindingRegion = region,
+                                     ...)
+    return(anno.peak)
+}
