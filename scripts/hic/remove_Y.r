@@ -27,13 +27,13 @@ chr.y.indices <- ifelse(test = hic.bed$X1 == "Y" | hic.bed$X1 == "chrY", yes = T
 chr.y <- hic.bed[chr.y.indices, 4]
 
 # Filter Hi-C matrix and bed file
-hic.mat.y <- hic.mat$X1 %in% chr.y.indices | hic.mat$X2 %in% chr.y.indices
-hic.mat <- hic.mat[-hic.mat.y, ]
-hic.bed <- hic.bed[-chr.y.indices, ]
+hic.mat.y <- hic.mat$X1 %in% chr.y | hic.mat$X2 %in% chr.y
+hic.mat.filtered <- hic.mat[!hic.mat.y, ]
+hic.bed.filtered <- hic.bed[!chr.y.indices, ]
 
 # Write matrix and bed files
 mat.filename <- gsub(pattern = ".matrix$", replacement = "_filtered.matrix", x = opts$matrix)
 bed.filename <- gsub(pattern = ".bed", replacement = "_filtered.bed", x = opts$bed)
 
-write.table(hic.mat, mat.filename, sep = "\t", quote = FALSE, col.names = FALSE, row.names = FALSE)
-write.table(hic.bed, bed.filename, sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.table(hic.mat.filtered, mat.filename, sep = "\t", quote = FALSE, col.names = FALSE, row.names = FALSE)
+write.table(hic.bed.filtered, bed.filename, sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
