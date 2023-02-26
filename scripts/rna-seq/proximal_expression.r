@@ -1,6 +1,9 @@
 require(BSDA)
 require(cowplot)
 require(DepecheR)
+require(reshape2)
+require(ggsignif)
+require(gridExtra)
 
 setClass("ProximalGeneExp", representation = representation(
     upregProx = "data.frame",
@@ -118,16 +121,53 @@ bplot.up <- bplot.up +
 
 #------PLOT STRATIFIED BY H3K27AC LFC------
 chip.zerotwo.list <- list()
+chip.twofour.list <- list()
+merged.list <- list()
 for (i in 1:length(dge.list.full)) {
-    prox.genes <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 0, maxlfc = 2)
-    chip.zerotwo.list[[names(dge.list.full)[i]]] <- prox.genes
+    prox.genes.zero <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 0, maxlfc = 2)
+    prox.genes.two <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 2, maxlfc = 4)
+    chip.zerotwo.list[[names(dge.list.full)[i]]] <- prox.genes.zero
+    chip.twofour.list[[names(dge.list.full)[i]]] <- prox.genes.two
+    merged.df <- merge(prox.genes.zero@upregProx, prox.genes.two@upregProx, by = 0, all = TRUE) %>%
+                    remove_rownames() %>%
+                    column_to_rownames(var = "Row.names")
+    colnames(merged.df) <- c("H3K27ac LFC 0-2", "H3K27ac LFC 2-4")
+    merged.list[[names(dge.list.full)[i]]] <- merged.df
 }
 
-chip.twofour.list <- list()
-for (i in 1:length(dge.list.full)) {
-    prox.genes <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 2, maxlfc = 4)
-    chip.twofour.list[[names(dge.list.full)[i]]] <- prox.genes
-}
+# Reshape merged data frames to long format to be used for ggplot
+merged.list <- lapply(merged.list, reshape2::melt)
+names.comp <- c("Pancreatic System",
+                "786 ccRCC System",
+                "OS ccRCC System",
+                "BrM2 Brain vs. Primary",
+                "LM2 Lung vs. Primary")
+comp.plot.list <- lapply(1:length(merged.list), function(i) {
+    ggplot(data = merged.list[[i]], aes(x = variable, y = value, fill = variable)) +
+        geom_boxplot(color = "black") +
+        geom_violin(alpha = 0.4) +
+        geom_signif(comparisons = list(c("H3K27ac LFC 0-2", "H3K27ac LFC 2-4")),
+                    map_signif_level = TRUE,
+                    test = "wilcox.test",
+                    test.args = list(alternative = "two.sided", paired = FALSE),
+                    size = 0.4,
+                    textsize = 4,
+                    vjust = 0.5) +
+        theme_bw(base_size = 9) +
+        ylab("Log2 FC") +
+        theme(axis.title.x = element_blank(),
+              axis.text.y = element_text(size = 9),
+              plot.title = element_text(size = 9),
+              legend.position = "none") +
+        ggtitle(names.comp[i])
+})
+
+# Save plot
+bp.k27.comp <- plot_grid(plotlist = comp.plot.list, ncol = 2, labels = "AUTO")
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_plot_compare.pdf")
+bp.k27.comp
+dev.off()
+
 
 # Seems like there is a huge sample size difference between the 0 and 2 and 2 and 4 groups, particularly
 # for the Rodrigues et al. data. We will see how this maps out
@@ -137,6 +177,3 @@ wilcox.test(x = chip.zerotwo.list[[1]]@upregProx$log2FoldChange,
             y = chip.twofour.list[[1]]@upregProx$log2FoldChange,
             paired = FALSE,
             alternative = "two.sided")
-ggplot() +
-    geom_boxplot(data = chip.zerotwo.list[[1]]@upregProx, aes(x = factor(0), y = log2FoldChange)) +
-    geom_boxplot(data = chip.twofour.list[[1]]@upregProx, aes(x = factor(1), y = log2FoldChange))
