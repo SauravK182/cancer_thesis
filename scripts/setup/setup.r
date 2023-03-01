@@ -12,7 +12,14 @@ scripts.dir <- "C:/Users/jvons/Documents/NCF/Thesis/scripts"
 rna.scripts.dir <- "rna-seq"
 
 # Set directory to main data directory
-setwd(main.data.dir)
+tryCatch(
+    {
+        setwd(main.data.dir)
+    },
+    error = function(e) {
+        message("Data directory does not exist/cannot be found. Moving on...")
+    }
+)
 
 # Source necessary files
 load(file.path(scripts.dir, "rna-seq/dge.RData"))
