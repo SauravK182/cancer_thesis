@@ -168,6 +168,53 @@ cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_plot_compare.pdf")
 bp.k27.comp
 dev.off()
 
+#------PLOT STRATIFIED BY H3K27AC LFC W/ MORE REFINED THRESHOLDS-------
+merged.list.refined <- list()
+for (i in 1:length(dge.list.full)) {
+    prox.genes.zero <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 0, maxlfc = 1)
+    prox.genes.one <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 1, maxlfc = 2)
+    prox.genes.two <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 2, maxlfc = Inf)
+    prox.genes <- list(prox.genes.zero@upregProx, prox.genes.one@upregProx, prox.genes.two@upregProx)
+    merged.df <- purrr::reduce(prox.genes, .f = function(df1, df2) {
+        merge(df1, df2, by = 0, all = TRUE) %>%
+        remove_rownames() %>%
+        column_to_rownames("Row.names")
+    })
+    colnames(merged.df) <- c("H3K27ac LFC 0-1", "H3K27ac LFC 1-2", "H3K27ac LFC > 2")
+    merged.list.refined[[i]] <- merged.df
+}
+
+melted.refined.list <- lapply(merged.list.refined, reshape2::melt)
+refined.plot.list <- lapply(1:length(melted.refined.list), function(i) {
+    comp.list <- split(t(combn(levels(melted.refined.list[[i]]$variable), 2)), 
+                       seq(nrow(t(combn(levels(melted.refined.list[[i]]$variable), 2)))))
+    ggplot(data = melted.refined.list[[i]], aes(x = variable, y = value, fill = variable)) +
+        geom_boxplot(color = "black", aes(group = variable)) +
+        geom_violin(alpha = 0.4) +
+        geom_signif(comparisons = comp.list,
+                    map_signif_level = c("***" = 0.001 / length(comp.list),
+                                         "**" = 0.01 / length(comp.list),
+                                         "*" = 0.05 / length(comp.list)),
+                    test = wilcox.test,
+                    test.args = list(alternative = "less", paired = FALSE),
+                    step_increase = 0.1,
+                    size = 0.4,
+                    textsize = 2.5,
+                    vjust = 0.2) +
+        theme_bw(base_size = 9) +
+        ylab("Log2 FC Gene Expression") +
+        theme(axis.title.x = element_blank(),
+              axis.text.y = element_text(size = 9),
+              plot.title = element_text(size = 9),
+              legend.position = "none") +
+        ggtitle(names.comp[i])
+})
+
+#---SAVE PLOTS---
+k27.comp.trio.plot <- plot_grid(plotlist = refined.plot.list, ncol = 2, labels = "AUTO")
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_triple_plot_compare.pdf")
+k27.comp.trio.plot
+dev.off()
 
 # Seems like there is a huge sample size difference between the 0 and 2 and 2 and 4 groups, particularly
 # for the Rodrigues et al. data. We will see how this maps out
@@ -176,4 +223,4 @@ dev.off()
 wilcox.test(x = chip.zerotwo.list[[1]]@upregProx$log2FoldChange,
             y = chip.twofour.list[[1]]@upregProx$log2FoldChange,
             paired = FALSE,
-            alternative = "two.sided")
+            alternative = "less")
