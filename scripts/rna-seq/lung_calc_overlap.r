@@ -1,11 +1,4 @@
 require(automateR)
-setClass("Overlap", representation = representation(
-        permutedf = "data.frame",
-        observed = "numeric",
-        expected = "numeric",
-        pval = "numeric",
-        type = "character"
-    ))
 
 calculate_overlap <- function(deseq.one, deseq.two) {
     upreg.one <- splitDE(deseq.one)[[1]] %>% rownames()
@@ -81,3 +74,4 @@ make_table_up <- function(deseq.one, deseq.two) {
 }
 
 mda.m1a.fisher <- make_table_up(lung.vs.primary, m1a.o.comp)
+

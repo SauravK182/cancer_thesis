@@ -25,3 +25,7 @@ tryCatch(
 load(file.path(scripts.dir, "rna-seq/dge.RData"))
 load(file.path(scripts.dir, "chip-seq/chip-dba.RData"))
 load(file.path(scripts.dir, "atac-seq/atac-dba.RData"))
+
+# Colors for plotting
+col.vec <- c("#2ACAEA", "#d43418", "#aa0565", "#ad872d", "#0bb321")
+names(col.vec) <- names(dge.list.full)

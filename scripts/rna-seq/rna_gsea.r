@@ -8,8 +8,14 @@ hallmark.compare <- automateR::compareCluster(geneClusters = gsea.list,
                                    fun = "GSEA",
                                    TERM2GENE = hallmark,
                                    seed = TRUE)
-dotplot_compareClusterResult_gsea(hallmark.compare, showCategory = 20)
+dotplot_compareClusterResult_gsea(hallmark.compare, showCategory = 50)
 
+#------Save hallmark gsea results--------
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/rna_gsea_hallmark.pdf",
+          width = 10,
+          height = 8)
+dotplot_compareClusterResult_gsea(hallmark.compare, showCategory = 50)
+dev.off()
 
 # CELL TYPE GSEA RESULTS
 cell.type <- msigdbr(species = "Homo sapiens", category = "C8") %>%

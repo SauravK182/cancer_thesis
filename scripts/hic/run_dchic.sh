@@ -148,8 +148,9 @@ for EXP in ${SAMPLES[@]}; do
         BEDFILE=$(echo $BEDFILE | sed "s/.bed/_filtered.bed/")
     fi
 
-    # Get replicate number, experiment name
-    EXPNAME=$( echo $EXP | sed -r "s/-hic-[0-9]+$//" )
+    # Get replicate number, experiment name; do some defense to make sure exp name is valid
+    EXPNAME=$( echo $EXP | sed -r "s/-hic-[0-9]+$//" | tr '-' '_' | tr '.' '_' )
+    if [[ $EXPNAME =~ ^[0-9] ]]; then EXPNAME="Sample_$EXPNAME"; fi # append sample_ if exp name starts w/ digit
     REPNUM=${EXP##*-}   # assuming user defined samples properly
     REPNAME="${EXPNAME}_R$REPNUM"
 

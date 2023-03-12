@@ -55,9 +55,14 @@ cai.atac <- db_analysis(atac.cai.ss,
                         atac = TRUE)
 
 #-------ANNOTATE PEAKS--------
-ren.atac.anno <- anno_peak_gr37(dba.report(ren.atac[[3]][[1]]))
-cai.brm.atac.anno <- anno_peak_gr37(dba.report(cai.atac[[3]][[1]]))
-cai.lm.atac.anno <- anno_peak_gr37(dba.report(cai.atac[[3]][[2]]))
+ren.atac.anno <- anno_peak_gr37(dba.report(ren.atac[[3]][[1]]), output = "overlapping", region = NULL)
+ren.atac.anno <- ren.atac.anno[!is.na(ren.atac.anno$feature), ]
+
+cai.brm.atac.anno <- anno_peak_gr37(dba.report(cai.atac[[3]][[1]]), output = "overlapping", region = NULL)
+cai.brm.atac.anno <- cai.brm.atac.anno[!is.na(cai.brm.atac.anno$feature), ]
+
+cai.lm.atac.anno <- anno_peak_gr37(dba.report(cai.atac[[3]][[2]]), output = "overlapping", region = NULL)
+cai.lm.atac.anno <- cai.lm.atac.anno[!is.na(cai.lm.atac.anno$feature), ]
 
 anno.atac.list.full <- list(panc = ren.atac.anno,
                             brain_mb = cai.brm.atac.anno,

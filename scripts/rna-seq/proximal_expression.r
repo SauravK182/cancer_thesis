@@ -5,17 +5,6 @@ require(reshape2)
 require(ggsignif)
 require(gridExtra)
 
-setClass("ProximalGeneExp", representation = representation(
-    upregProx = "data.frame",
-    downregProx = "data.frame",
-    upregIntPercent = "numeric",
-    downregIntPercent = "numeric",
-    totalIntersect = "numeric",
-    totalGenes = "numeric",
-    binomTestUp = "numeric",
-    binomTestDown = "numeric"
-))
-
 get_proximal_genes <- function(ranges, deseqObject, minlfc = 0, maxlfc = Inf) {
     # Get up/down changing features
     anno.up <- ranges[ranges$Fold > minlfc & ranges$Fold < maxlfc, ]
@@ -68,11 +57,13 @@ make_bplot_pge <- function(pgeObject, plot = "up", fillCol = "white",
     }
 
     bplot <- geom_boxplot(data = log.df, 
-                          aes(x = factor(name), y = log2FoldChange, fill = fillCol),
+                          aes(x = factor(name), y = log2FoldChange),
+                          fill = fillCol,
                           color = "black",
                           notch = TRUE)
     vplot <- geom_violin(data = log.df,
-                         aes(x = factor(name), y = log2FoldChange, fill = fillCol),
+                         aes(x = factor(name), y = log2FoldChange),
+                         fill = fillCol,
                          alpha = 0.4)
     return(list(bplot, vplot))
 }
@@ -91,7 +82,6 @@ for (i in 1:length(proximal.chip.list)) {
 }
 
 # Create boxplot
-col.vec <- dColorVector(1:length(proximal.chip.list))
 bplot.up.list <- lapply(1:length(proximal.chip.list), function(i) {
     make_bplot_pge(proximal.chip.list[[i]], plot = "up", fillCol = col.vec[i], name = names(proximal.chip.list[i]), xpos = i)
 })
@@ -118,6 +108,11 @@ bplot.up <- bplot.up +
                    axis.text.y = element_text(size = 14),
                    legend.position = "none") +
              geom_hline(yintercept = 0)
+
+#----SAVE THE BASE PLOT----
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_all_binom.pdf")
+bplot.up
+dev.off()
 
 #------PLOT STRATIFIED BY H3K27AC LFC------
 chip.zerotwo.list <- list()
