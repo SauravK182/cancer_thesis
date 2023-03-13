@@ -56,3 +56,40 @@ setClass("ProximalGeneExp", representation = representation(
   binomTestUp = "numeric",
   binomTestDown = "numeric"
 ))
+
+setGeneric(name = "intersect_prox", def = function(obj1, obj2, type = "") standardGeneric("intersect_prox"))
+
+setMethod(
+          f = "intersect_prox",
+          signature = "ProximalGeneExp",
+          definition = function(obj1, obj2, type = "up") {
+            if (type == "up") {
+              proxgenes.one <- obj1@upregProx
+              proxgenes.two <- obj2@upregProx
+            } else if (type == "down") {
+              proxgenes.one <- obj1@downregProx
+              proxgenes.two <- obj2@downregProx
+            } else {
+              stop("Variable 'type' should be 'up' or 'down' to indicate which intersection to take.")
+            }
+
+            genes.in.both <- intersect(rownames(proxgenes.one), rownames(proxgenes.two))
+            mutual.lfc <- data.frame(log2FoldChange = proxgenes.one[genes.in.both, ],
+                                     row.names = genes.in.both)
+            prox.list <- list(prox_one = proxgenes.one, prox_two = proxgenes.two)
+            prox.list <- lapply(prox.list, function(df) {
+              df %>%
+                rownames_to_column(var = "rowname") %>%
+                filter(!(rowname %in% genes.in.both)) %>%
+                column_to_rownames(var = "rowname")
+            })
+
+            prox.list[["mutual"]] <- mutual.lfc
+            merged.df <- purrr::reduce(prox.list, .f = function(df1, df2) {
+              merge(df1, df2, by = 0, all = TRUE) %>%
+                remove_rownames() %>%
+                column_to_rownames(var = "Row.names")
+            })
+            
+            return(merged.df)
+})

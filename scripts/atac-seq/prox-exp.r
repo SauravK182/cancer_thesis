@@ -1,4 +1,3 @@
-#----BASE PLOT----
 color_df <- function(melted.df, color.vec) {
     if (! ("variable" %in% colnames(melted.df))) {
         stop("Must pass a melted data frame with column 'variable' indicating original colnames.")
@@ -15,6 +14,8 @@ color_df <- function(melted.df, color.vec) {
 }
 
 comp.names <- names(anno.atac.list.full)
+
+#----BASE PLOT----
 atac.prox.list <- lapply(comp.names, function(i) get_proximal_genes(anno.atac.list.full[[i]], dge.list.full[[i]])@upregProx)
 atac.merged.up <- purrr::reduce(atac.prox.list, .f = function(df1, df2) {
     merge(df1, df2, by = 0, all = TRUE) %>%
@@ -53,3 +54,21 @@ atac.plot.up <- ggplot(data = atac.melted, aes(x = variable, y = value, fill = f
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/atac_all_binom.pdf")
 atac.plot.up
 dev.off()
+
+
+
+
+#---PLOT FOR H3K27ac vs. ATAC-seq----
+atac.prox.objs <- lapply(comp.names, function(x) get_proximal_genes(anno.atac.list.full[[x]], dge.list.full[[x]]))
+chip.prox.objs <- lapply(comp.names, function(x) get_proximal_genes(anno.chip.list.full[[x]], dge.list.full[[x]]))
+
+# Test on Ren data
+ren.mutual <- intersect_prox(atac.prox.objs[[1]], chip.prox.objs[[1]], type = "up")
+colnames(ren.mutual) <- c("Differential Chromatin Accessibility", "Differential H3K27ac", "Both")
+ren.melted <- reshape2::melt(ren.mutual)
+
+# ggplot
+ggplot(data = ren.melted, aes(x = variable, y = value, fill = variable)) +
+    geom_boxplot(color = "black") +
+    geom_violin(alpha = 0.4) +
+    theme_bw()
