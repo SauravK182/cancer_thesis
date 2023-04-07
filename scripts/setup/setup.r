@@ -1,4 +1,7 @@
 library(automateR)  # custom package
+library(cowplot)
+library(ggsignif)
+library(viridis)
 
 # Set up data directories
 main.data.dir <- "D:/SK/data"
@@ -27,5 +30,7 @@ load(file.path(scripts.dir, "chip-seq/chip-dba.RData"))
 load(file.path(scripts.dir, "atac-seq/atac-dba.RData"))
 
 # Colors for plotting
-col.vec <- c("#2ACAEA", "#d43418", "#aa0565", "#ad872d", "#0bb321")
+n <- length(dge.list.full)
+col.vec <- viridis_pal(option = "C")(n)
 names(col.vec) <- names(dge.list.full)
+# pie(rep(1, n), col = col.vec)

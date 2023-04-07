@@ -165,13 +165,15 @@ dge_analysis <- function(featurecounts,
 #' Takes in a `results` object produced by `DESeq2` and isolates only differentially expressed genes.
 #' @param results Object produced by a call to `results` or `lfcShrink` in `DESeq2`
 #' @param threshold FDR-adjusted p-value threshold. Only genes below this threshold will be kept. Default: 0.05.
+#' @param lfc Log-fold change minimum to be imposed to extract DE genes. Default = 0 (i.e., no threshold)
 #'
 #' @return Subset of the `results` object, containing only genes below the user-defined threshold.
 #' @export
-signifDE <- function(results, threshold = 0.05) {
+signifDE <- function(results, threshold = 0.05, lfc = 0) {
     i <- is.na(results$padj)
     res.nona <- results[!i, ]
-    return(res.nona[res.nona$padj < threshold, ])
+    signif <- res.nona[res.nona$padj < threshold, ]
+    return(signif[abs(signif$log2FoldChange) > lfc, ])
 }
 
 #' @title Isolate up- and down-regulated genes

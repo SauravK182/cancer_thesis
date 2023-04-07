@@ -25,32 +25,32 @@ atac.merged.up <- purrr::reduce(atac.prox.list, .f = function(df1, df2) {
     column_to_rownames(var = "Row.names")
 })
 
-# Code in names for ggplot
-ggnames <- c("Pancreatic System", "MDA-MB Brain/Primary", "MDA-MB Lung/Primary")
+# Code in names for ggplot and get color vector
+ggnames <- c("Pancreatic System", "BrM2 Brain vs. Primary", "LM2 Lung vs. Primary")
 colnames(atac.merged.up) <- ggnames
+atac.color <- col.vec[match(comp.names, names(col.vec))]
+
 
 # Melt the merged df
 atac.melted <- reshape2::melt(atac.merged.up)
 
 # Make ggplot object
-color.vec <- col.vec[c("panc", "brain_mb", "lung_mb")]
 names(color.vec) <- ggnames
 atac.plot.up <- ggplot(data = atac.melted, aes(x = variable, y = value, fill = factor(variable))) +
     geom_boxplot(color = "black") +
+    stat_boxplot(geom = "errorbar", width = 0.2) +
     geom_violin(alpha = 0.4) +
-    theme_bw(base_size = 10) +
-    scale_fill_manual(values = color.vec) +
+    theme_cowplot() +
+    scale_fill_manual(values = unname(atac.color)) +
     ylab("Log2 FC Gene Expression") +
     theme(axis.title.x = element_blank(),
-          axis.text.y = element_text(size = 11),
-          axis.title.y = element_text(size = 11),
-          axis.text.x = element_text(size = 9),
           legend.position = "none") +
     annotate("text",
              x = seq_len(ncol(atac.merged.up)),
              y = sapply(atac.merged.up, function(x) max(na.omit(x)) + 0.5),
-             size = 10,
-             label = "***")
+             size = 8,
+             label = "***") +
+    geom_hline(yintercept = 0)
 
 #----SAVE PLOT----
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/atac_all_binom.pdf")
@@ -67,28 +67,33 @@ chip.prox.objs <- lapply(comp.names, function(x) get_proximal_genes(anno.chip.li
 # Get list of melted dfs for plots
 atac.chip.df <- lapply(seq_len(length(atac.prox.objs)), function(i) {
     df.prox <- intersect_prox(atac.prox.objs[[i]], chip.prox.objs[[i]])
-    colnames(df.prox) <- c("Differential \n Chromatin Accessibility", "Differential H3K27ac", "Both")
+    colnames(df.prox) <- c("Differential Chromatin Accessibility", "Differential H3K27ac", "Both")
     return(df.prox)
 })
 atac.chip.df.melted <- lapply(atac.chip.df, reshape2::melt)
 
 # Make plot with unpaired Wilcoxon rank-sum test for population distributions
-names.comp <- c("Pancreatic System",
-                "MDA-MB Brain/Primary System",
-                "MDA-MB Lung/Primary System")
+xlabels <- expression(
+    Delta~Accesibility,
+    Delta~H3K27ac,
+    Both
+)
+col.vec3 <- c("blue", "green", "red")
 ggplot.list <- lapply(seq_len(length(atac.chip.df.melted)), function(i) {
     comp.list <- split(t(combn(levels(atac.chip.df.melted[[i]]$variable), 2)),
                        seq(nrow(t(combn(levels(atac.chip.df.melted[[i]]$variable), 2)))))
     bplot <- ggplot(data = atac.chip.df.melted[[i]], aes(x = variable, y = value, fill = variable)) +
                 geom_boxplot(color = "black", aes(group = variable)) +
+                stat_boxplot(geom = "errorbar", width = 0.2) +
                 geom_violin(alpha = 0.4) +
+                theme_cowplot() +
                 geom_signif(
                     comparisons = comp.list,
                     map_signif_level = c("*" = 0.05 / length(comp.list),
                                          "**" = 0.01 / length(comp.list),
                                          "***" = 0.001 / length(comp.list)),
                     test = wilcox.test,
-                    test.args = list(paired = FALSE, alternative = "two.sided"),
+                    test.args = list(paired = FALSE, alternative = "less"),
                     step_increase = 0.1,
                     size = 0.4,
                     textsize = 2.5,
@@ -99,16 +104,24 @@ ggplot.list <- lapply(seq_len(length(atac.chip.df.melted)), function(i) {
                          y = sapply(atac.chip.df[[i]], function(x) min(na.omit(x)) - 0.5),
                          label = paste("n =", sapply(atac.chip.df[[i]], function(x) sum(!is.na(x)))),
                          size = 3) +
-                theme_bw(base_size = 9) +
-                ggtitle(names.comp[i]) +
+                ggtitle(ggnames[i]) +
                 ylab("Log2 FC Gene Expression") +
                 theme(axis.title.x = element_blank(),
-                      legend.position = "none")
+                      axis.title.y = element_text(size = 10),
+                      axis.text.x = element_text(size = 9),
+                      plot.title = element_text(size = 9),
+                      legend.position = "none") +
+                scale_x_discrete(labels = xlabels) +
+                scale_fill_manual(values = col.vec3)
     return(bplot)
 })
 
-# Use gridExtra and save the plots
-arranged.plots <- plot_grid(plotlist = ggplot.list, ncol = 2, labels = "AUTO")
+# Use plot_grid and save the plots
+arranged.plots <- cowplot::plot_grid(
+    cowplot::plot_grid(ggplot.list[[1]], ggplot.list[[2]], nrow = 1, ncol = 2, labels = "AUTO"),
+    cowplot::plot_grid(NULL, ggplot.list[[3]], NULL, rel_widths = c(0.5, 1, 0.5), nrow = 1, labels = "C", hjust = -13),
+    nrow = 2
+)
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/atac_chip_comp.pdf")
 arranged.plots
 dev.off()
@@ -117,4 +130,4 @@ dev.off()
 wilcox.test(x = atac.chip.df[[2]][, 2], y = atac.chip.df[[2]][, 3], paired = FALSE)
 
 # p-value for Lung vs. Primary of both vs h3k27ac is 0.0192
-wilcox.test(x = atac.chip.df[[3]][, 2], y = atac.chip.df[[3]][, 3], paired = FALSE)
+wilcox.test(x = atac.chip.df[[3]][, 2], y = atac.chip.df[[3]][, 3], paired = FALSE, alternative = "less")

@@ -77,3 +77,116 @@ dge.list.upreg <- lapply(dge.list.full, function(df) splitDE(df)[[1]])
 dge.list.downreg <- lapply(dge.list.full, function(df) splitDE(df)[[2]])
 dge.list.upreg.ens <- lapply(dge.list.upreg, rownames)
 dge.list.downreg.ens <- lapply(dge.list.downreg, rownames)
+
+
+
+
+#-------MAKING HEATMAP--------
+full.df <- lapply(list(featurecounts.ren, featurecounts.rod, featurecounts.cai), txt2counts) %>%
+            purrr::reduce(.f = function(df1, df2) {
+                merge(df1, df2, by = 0, all = TRUE) %>%
+                column_to_rownames(var = "Row.names")
+            })
+des.mat <- data.frame(Culture = c(rep(c("capan", "hpne", "panc"), each = 3),
+                                  rep(c("m1a", "o", "lm1", "rc2"), each = 2),
+                                  rep(c("mdamb", "lm", "br"), each = 3)),
+                      Lab = c(rep("lab1", times = 9),
+                              rep("lab2", times = 8),
+                              rep("lab3", times = 9)))
+dds <- DESeqDataSetFromMatrix(countData = full.df, colData = des.mat, design = ~ Culture)
+full.dge <- DESeq(dds)
+full.counts <- counts(full.dge, normalized = TRUE)
+
+# Create Heatmap annotation
+# See https://www.biostars.org/p/317349/
+ann <- data.frame("Cell Line" = c(rep("Capan-1", 3),
+                                  rep("HPNE", 3),
+                                  rep("PANC-1", 3),
+                                  rep("786-M1A", 2),
+                                  rep("786-O", 2),
+                                  rep("OS-LM1", 2),
+                                  rep("OS-RC2", 2),
+                                  rep("BrM2", 3),
+                                  rep("LM2", 3),
+                                  rep("MDA-MB", 3)),
+                 "Morphology" = c(rep("Metastasis", 3),
+                                  rep("Normal", 3),
+                                  rep("Primary", 3),
+                                  rep("Metastasis", 2),
+                                  rep("Primary", 2),
+                                  rep("Metastasis", 2),
+                                  rep("Primary", 2),
+                                  rep("Metastasis", 3),
+                                  rep("Metastasis", 3),
+                                  rep("Primary", 3)),
+                 check.names = FALSE)
+
+# Get colors for HeatmapAnnotation function
+n <- length(unique(ann[, 1]))
+# Code from https://stackoverflow.com/questions/15282580/
+# require(RColorBrewer)
+# qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+# col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+# pie(rep(1,n), col=sample(col_vector, n))
+
+# require(randomcoloR)
+# palette <- distinctColorPalette(n)
+# pie(rep(1, n), col = palette)
+
+require(ComplexHeatmap)
+col_vec <- viridis_pal(option = "plasma")(n)
+names(col_vec) <- unique(ann[, 1])
+morph_vec <- c("Metastasis" = "red", "Primary" = "#0026fd", "Normal" = "green")
+col_vec <- list("Cell Line" = col_vec, "Morphology" = morph_vec)
+
+colAnno <- HeatmapAnnotation(df = ann,
+                             which = "column",
+                             col = col_vec,
+                             border = TRUE,
+                             annotation_legend_param = list(at = c(unique(ann[, 1]), names(morph_vec))),
+                             annotation_width = unit(c(1, 4), "cm"),
+                             gap = unit(1, "mm"))
+
+# z-score counts within sample and plot on Heatmap
+heatmap.all <- t(apply(full.counts, 1, scale)) %>%
+                na.omit() %>%
+                Heatmap(cluster_rows = TRUE, cluster_columns = TRUE, show_column_names = FALSE,
+                        name = "Z-score", show_row_names = FALSE,
+                        top_annotation = colAnno)
+save(heatmap.all, file = "C:/Users/jvons/Documents/NCF/Thesis/scripts/rna-seq/gene_all_heatmap.RData")
+
+# Save heatmap
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/gene_all_zacrossexp.pdf")
+heatmap.all
+dev.off()
+
+# Take only genes DE in at least one comparison
+de.genes <- lapply(dge.list.full, signifDE, lfc = 1) %>%
+                lapply(function(deseq) rownames(as.data.frame(deseq))) %>%
+                purrr::reduce(union)
+heatmap.lfc1 <- t(apply(full.counts[de.genes, ], 1, scale)) %>%
+                    na.omit() %>%
+                    Heatmap(cluster_rows = TRUE, cluster_columns = TRUE, show_column_names = FALSE,
+                            name = "Z-score", show_row_names = FALSE, show_row_dend = FALSE,
+                            top_annotation = colAnno)
+
+# Save heatmap
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/gene_z_lfcthreshold_1.pdf")
+heatmap.lfc1
+dev.off()
+
+
+# Create heatmap for LFC >= 2
+de.genes <- lapply(dge.list.full, signifDE, lfc = 2) %>%
+                lapply(function(deseq) rownames(as.data.frame(deseq))) %>%
+                purrr::reduce(union)
+heatmap.lfc2 <- t(apply(full.counts[de.genes, ], 1, scale)) %>%
+                    na.omit() %>%
+                    Heatmap(cluster_rows = TRUE, cluster_columns = TRUE, show_column_names = FALSE,
+                            name = "Z-score", show_row_names = FALSE, show_row_dend = FALSE,
+                            top_annotation = colAnno)
+
+# Save heatmap
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/gene_z_lfcthreshold_2.pdf")
+heatmap.lfc2
+dev.off()

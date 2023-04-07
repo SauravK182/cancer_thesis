@@ -1,9 +1,5 @@
 require(BSDA)
-require(cowplot)
-require(DepecheR)
 require(reshape2)
-require(ggsignif)
-require(gridExtra)
 
 get_proximal_genes <- function(ranges, deseqObject, minlfc = 0, maxlfc = Inf) {
     # Get up/down changing features
@@ -65,53 +61,69 @@ make_bplot_pge <- function(pgeObject, plot = "up", fillCol = "white",
                          aes(x = factor(name), y = log2FoldChange),
                          fill = fillCol,
                          alpha = 0.4)
+    statplot <- stat_boxplot(data = log.df,
+                             aes(x = factor(name), y = log2FoldChange),)
     return(list(bplot, vplot))
 }
 
 #-----BASE PLOT-----
-proximal.chip.list <- list()
-for (i in 1:length(dge.list.full)) {
-    prox.genes <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]])
-    proximal.chip.list[[names(dge.list.full)[i]]] <- prox.genes
-}
+names.comp <- c("Pancreatic System",
+                "786 ccRCC System",
+                "OS ccRCC System",
+                "BrM2 Brain vs. Primary",
+                "LM2 Lung vs. Primary")
 
-# Format p-values from exact binomial test for upregulated genes
-pval.vec.up <- c()
-for (i in 1:length(proximal.chip.list)) {
-    pval.vec.up <- c(pval.vec.up, formatC(proximal.chip.list[[i]]@binomTestUp, digits = 3))
-}
+# Get LFCs of genes annotated to be near a significant increase in H3K27ac occupancy
+proximal.up.list <- lapply(seq_len(length(dge.list.full)), function(i) {
+    prox.genes <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]])@upregProx
+})
+names(proximal.up.list) <- names(dge.list.full)
 
-# Create boxplot
-bplot.up.list <- lapply(1:length(proximal.chip.list), function(i) {
-    make_bplot_pge(proximal.chip.list[[i]], plot = "up", fillCol = col.vec[i], name = names(proximal.chip.list[i]), xpos = i)
+# Get LFCs of genes annotated to be near a significant decrease in H3K27ac occupancy
+proximal.down.list <- lapply(seq_len(length(dge.list.full)), function(i) {
+    prox.genes <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]])@downregProx
+})
+names(proximal.down.list) <- names(dge.list.full)
+
+# Within each list, merge all the dataframes in the list
+merged.df.list <- lapply(list(up = proximal.up.list, down = proximal.down.list), function(ls) {
+    merged.df <- purrr::reduce(.x = ls, .f = function(df1, df2) {
+        merge(df1, df2, by = 0, all = TRUE) %>%
+        remove_rownames() %>%
+        column_to_rownames("Row.names")
+    })
+    colnames(merged.df) <- names.comp
+    return(merged.df)
+})
+melted.df.list <- lapply(merged.df.list, reshape2::melt)
+
+# Creat plots
+bplot.list <- lapply(seq_len(length(melted.df.list)), function(i) {
+    bplot <- ggplot(data = melted.df.list[[i]], aes(x = variable, y = value, fill = variable)) +
+                geom_boxplot(color = "black") +
+                stat_boxplot(geom = "errorbar", width = 0.3) +
+                geom_violin(alpha = 0.4) +
+                theme_cowplot() +
+                ylab("Log2 FC Gene Expression") +
+                geom_hline(yintercept = 0) +
+                theme(axis.title.x = element_blank(),
+                      legend.position = "none",
+                      axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+                annotate("text",
+                         x = seq_len(ncol(merged.df.list[[i]])),
+                         y = sapply(merged.df.list[[i]], function(x) max(x[!is.na(x)]) + 1),
+                         size = 8,
+                         label = "***") +
+                scale_fill_manual(values = unname(col.vec))
 })
 
-# Create and order annotations
-names.sorted <- sort(names(dge.list.full), decreasing = FALSE)
-label.list <- lapply(seq_len(length(names.sorted)), function(i) {
-    j <- match(names.sorted[i], names(dge.list.full))
-    annotate("text",
-             x = i,
-             y = max(proximal.chip.list[[j]]@upregProx$log2FoldChange) + 1,
-             size = 10,
-             label = "***")
-})
-bplot.up <- ggplot()
-for (i in 1:length(bplot.up.list)) {
-    bplot.up <- bplot.up + bplot.up.list[[i]][[1]] + bplot.up.list[[i]][[2]] + label.list[[i]]
-}
-bplot.up <- bplot.up +
-             theme_bw(base_size = 11) +
-             xlab("Comparison") +
-             ylab("Log2FC") +
-             theme(axis.text.x = element_text(size = 14),
-                   axis.text.y = element_text(size = 14),
-                   legend.position = "none") +
-             geom_hline(yintercept = 0)
+#----SAVE THE BASE PLOTS----
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_all_binom_up.pdf")
+bplot.list[[1]]
+dev.off()
 
-#----SAVE THE BASE PLOT----
-cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_all_binom.pdf")
-bplot.up
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_all_binom_down.pdf")
+bplot.list[[2]]
 dev.off()
 
 #------PLOT STRATIFIED BY H3K27AC LFC------
@@ -132,15 +144,12 @@ for (i in 1:length(dge.list.full)) {
 
 # Reshape merged data frames to long format to be used for ggplot
 merged.list <- lapply(merged.list, reshape2::melt)
-names.comp <- c("Pancreatic System",
-                "786 ccRCC System",
-                "OS ccRCC System",
-                "BrM2 Brain vs. Primary",
-                "LM2 Lung vs. Primary")
+col.vec2 <- c("blue", "red")
 comp.plot.list <- lapply(1:length(merged.list), function(i) {
     ggplot(data = merged.list[[i]], aes(x = variable, y = value, fill = variable)) +
-        geom_boxplot(color = "black") +
-        geom_violin(alpha = 0.4) +
+        geom_boxplot(color = "black", width = 0.5) +
+        stat_boxplot(geom = "errorbar", width = 0.25) +
+        geom_violin(alpha = 0.4, width = 0.65) +
         geom_signif(comparisons = list(c("H3K27ac LFC 0-2", "H3K27ac LFC 2-4")),
                     map_signif_level = TRUE,
                     test = "wilcox.test",
@@ -148,22 +157,35 @@ comp.plot.list <- lapply(1:length(merged.list), function(i) {
                     size = 0.4,
                     textsize = 4,
                     vjust = 0.5) +
-        theme_bw(base_size = 9) +
-        ylab("Log2 FC") +
+        theme_cowplot() +
+        ylab("Log2 FC Gene Expression") +
         theme(axis.title.x = element_blank(),
               axis.text.y = element_text(size = 9),
+              axis.title.y = element_text(size = 9),
+              axis.text.x = element_text(size = 9),
               plot.title = element_text(size = 9),
               legend.position = "none") +
-        ggtitle(names.comp[i])
+        ggtitle(names.comp[i]) +
+        scale_fill_manual(values = col.vec2)
 })
 
 # Save plot
-bp.k27.comp <- plot_grid(plotlist = comp.plot.list, ncol = 2, labels = "AUTO")
+# Use nested plot_grids to center bottom sole plot - modify the widths of the 2nd plot to
+# center the lone graph by using NULL space
+bp.k27.comp <- cowplot::plot_grid(
+                        cowplot::plot_grid(comp.plot.list[[1]], 
+                                           comp.plot.list[[2]], 
+                                           comp.plot.list[[3]], 
+                                           comp.plot.list[[4]], ncol = 2, nrow = 2, labels = "AUTO"),
+                        cowplot::plot_grid(NULL, comp.plot.list[[5]], NULL, rel_widths = c(0.5, 1, 0.5), nrow = 1, labels = "E", hjust = -14),
+                        nrow = 2,
+                        rel_heights = c(2, 1))
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_plot_compare.pdf")
 bp.k27.comp
 dev.off()
 
 #------PLOT STRATIFIED BY H3K27AC LFC W/ MORE REFINED THRESHOLDS-------
+h3.comps <- c("H3K27ac LFC 0-1", "H3K27ac LFC 1-2", "H3K27ac LFC > 2")
 merged.list.refined <- list()
 for (i in 1:length(dge.list.full)) {
     prox.genes.zero <- get_proximal_genes(anno.chip.list.full[[i]], dge.list.full[[i]], minlfc = 0, maxlfc = 1)
@@ -175,16 +197,29 @@ for (i in 1:length(dge.list.full)) {
         remove_rownames() %>%
         column_to_rownames("Row.names")
     })
-    colnames(merged.df) <- c("H3K27ac LFC 0-1", "H3K27ac LFC 1-2", "H3K27ac LFC > 2")
-    merged.list.refined[[i]] <- merged.df
+    colnames(merged.df) <- h3.comps
+    iscol.na <- c()
+    for (j in seq_len(ncol(merged.df))) {
+        if (sum(is.na(merged.df[, j])) == length(merged.df[, j])) {
+            iscol.na <- c(iscol.na, TRUE)
+        } else {
+            iscol.na <- c(iscol.na, FALSE)
+        }
+    }
+    merged.list.refined[[i]] <- merged.df[, !iscol.na]
 }
 
+# Create color vector and melt
 melted.refined.list <- lapply(merged.list.refined, reshape2::melt)
+col.vec3 <- c("blue", "green", "red")
+# Make plots
 refined.plot.list <- lapply(1:length(melted.refined.list), function(i) {
     comp.list <- split(t(combn(levels(melted.refined.list[[i]]$variable), 2)), 
                        seq(nrow(t(combn(levels(melted.refined.list[[i]]$variable), 2)))))
+    colors <- col.vec3[match(levels(melted.refined.list[[i]]$variable), h3.comps)]
     ggplot(data = melted.refined.list[[i]], aes(x = variable, y = value, fill = variable)) +
         geom_boxplot(color = "black", aes(group = variable)) +
+        stat_boxplot(geom = "errorbar", width = 0.25) +
         geom_violin(alpha = 0.4) +
         geom_signif(comparisons = comp.list,
                     map_signif_level = c("***" = 0.001 / length(comp.list),
@@ -196,17 +231,28 @@ refined.plot.list <- lapply(1:length(melted.refined.list), function(i) {
                     size = 0.4,
                     textsize = 2.5,
                     vjust = 0.2) +
-        theme_bw(base_size = 9) +
+        theme_cowplot() +
         ylab("Log2 FC Gene Expression") +
         theme(axis.title.x = element_blank(),
-              axis.text.y = element_text(size = 9),
+              axis.title.y = element_text(size = 9),
+              axis.text.x = element_text(size = 7),
               plot.title = element_text(size = 9),
               legend.position = "none") +
-        ggtitle(names.comp[i])
+        ggtitle(names.comp[i]) +
+        scale_fill_manual(values = colors)
 })
 
 #---SAVE PLOTS---
-k27.comp.trio.plot <- plot_grid(plotlist = refined.plot.list, ncol = 2, labels = "AUTO")
+# Use multiple plot_grids to center lone 5th graph
+k27.comp.trio.plot <- cowplot::plot_grid(
+                        cowplot::plot_grid(refined.plot.list[[1]], 
+                                           refined.plot.list[[2]], 
+                                           refined.plot.list[[3]], 
+                                           refined.plot.list[[4]], ncol = 2, nrow = 2, labels = "AUTO"),
+                        cowplot::plot_grid(NULL, refined.plot.list[[5]], NULL, rel_widths = c(0.5, 1, 0.5), nrow = 1, labels = "E", hjust = -14),
+                        nrow = 2,
+                        rel_heights = c(2, 1)
+)
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_triple_plot_compare.pdf")
 k27.comp.trio.plot
 dev.off()
