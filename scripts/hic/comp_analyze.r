@@ -1,3 +1,6 @@
+require(ggvenn)
+require(ggpattern)
+
 # Read in diff comp files
 get_comp <- function(name, file = "filtered", getsubcomp = TRUE) {
     compdir <- file.path("E:/SK/data/", name, "dchic_res")
@@ -94,7 +97,7 @@ genexp.comp <- lapply(names(hic.anno.list), function(name) {
 })
 
 # Plot gene expression by compartment change
-names.comp <- c("Pancreatic Cell Line", "786 Renal Cell Line")
+names.comp <- c("Pancreatic System", "786 ccRCC System")
 col.vec4 <- c("blue", "red", "gray", "gray")
 compexp.plots <- lapply(seq_len(length(genexp.comp)), function(i) {
     comp.list <- list(c("A to B Transition", "B to A Transition"),
@@ -125,12 +128,6 @@ compexp.plots <- lapply(seq_len(length(genexp.comp)), function(i) {
         ggtitle(names.comp[i]) +
         scale_fill_manual(values = col.vec4)
 })
-
-# Save plot
-bp.genexp.comp <- plot_grid(plotlist = compexp.plots, labels = "AUTO", ncol = 1)
-cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compartment_expr.pdf", height = 11, width = 8)
-bp.genexp.comp
-dev.off()
 
 # Get diff in comp scores and LFC gene exp
 panc.full <- get_comp("ren-panc", file = "full", getsubcomp = FALSE)
@@ -180,37 +177,136 @@ pdensity.list <- lapply(seq_len(length(dcomp.lfc)), function(i) {
     # pval.nums <- strsplit(pval.format, "e")
     # pval.final <- paste("'p ='~", pval.nums[[1]][1], "~\u00D7~'10'^", pval.nums[[1]][2])
     density.plot <- ggplot(data = dcomp.lfc[[i]], aes(x = dComp, y = genelfc)) +
-                        stat_density_2d(aes(fill = ..level..), geom = "polygon", color = "white") +
+                        # increase bandwidth slightly w/ adjust to smoothen plot, color contour lines black
+                        stat_density_2d(aes(fill = ..level..), geom = "polygon", n = 500, adjust = 1.5, color = "black") +
                         theme_bw() +
-                        scale_fill_viridis_c() +
+                        #scale_fill_viridis_c() +
+                        scale_fill_distiller(palette = "Spectral") +
                         xlab(xlabel) +
-                        ylab("Log2 FC Gene Expression") +
-                        ggtitle(names.vec[i]) +
                         annotate("text",
                                  x = rep(quantile(dcomp.lfc[[i]]$dComp, 0.08, na.rm = TRUE), 2),
                                  y = c(quantile(dcomp.lfc[[i]]$genelfc, 0.9, na.rm = TRUE) + 0.1,
                                        quantile(dcomp.lfc[[i]]$genelfc, 0.89, na.rm = TRUE)),
-                                 label = c(pearson, pval.list[[i]])) +
+                                 label = c(pearson, pval.list[[i]]),
+                                 size = 3) +
                         theme(panel.grid.major = element_blank(),
                               panel.grid.minor = element_blank(),
                               panel.background = element_rect(color = "black", linewidth = 1),   # draw border
                               plot.title = element_text(face = "bold"),     # boldface title
-                              axis.title.x = element_text(size = 13))
+                              axis.title.x = element_text(size = 10),
+                              axis.title.y = element_blank())
 })
 
-# Save plot
-density.grid <- cowplot::plot_grid(plotlist = pdensity.list, nrow = 2, ncol = 1, labels = "AUTO")
-cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/comp_genelfc_density.pdf", height = 10, width = 8)
-density.grid
-dev.off()
-
-
 # Pie chart to visualize % of windows changing compartment
+# Plot code inspired from https://stackoverflow.com/questions/29153159/
+hic.names <- c(panc = "Pancreatic System", m1a_o = "786 ccRCC System")
 percent.change <- lapply(names(hic.list), function(name) {
     total.windows <- nrow(hic.full[[name]])
     df.comp <- compswitch(hic.list[[name]])
     a.to.b <- sum(df.comp$transition == "A to B Transition")
     b.to.a <- sum(df.comp$transition == "B to A Transition")
     stable <- total.windows - (a.to.b + b.to.a)
-    return(c(a.to.b, b.to.a, stable) / total.windows)
+    percentages <- (c(a.to.b, b.to.a, stable) / total.windows) * 100
+    transitions <- c("A to B Transition", "B to A Transition", "No Transition")
+    label.percent <- c()
+    for (i in seq_len(length(transitions))) {
+        marg.label <- paste0(transitions[i], " (", formatC(percentages[i], digits = 2, format = "f"), "%)")
+        label.percent <- c(label.percent, marg.label)
+    }
+    pie.plot <- ggplot(data = data.frame(percent = percentages, labs = label.percent), aes(factor(0), y = percent, fill = factor(labs))) +
+                    geom_bar(stat = "identity", color = "black") +
+                    coord_polar(theta = "y", start = -pi/2, direction = -1) +
+                    theme_bw() +
+                    ggtitle(hic.names[[name]]) +
+                    theme(axis.ticks = element_blank(),
+                          axis.text.y = element_blank(),
+                          axis.text.x = element_blank(),
+                          axis.title = element_blank(),
+                          plot.title = element_text(face = "bold"),
+                          legend.title = element_blank(),
+                          panel.grid.major = element_blank(),
+                          panel.grid.minor = element_blank(),
+                          panel.border = element_blank()) +
+                    scale_fill_manual(values = c("blue", "red", "gray"))
 })
+
+# Venn diagram for visualizing number of genes changing compartment in both systems
+intersect.windows <- lapply(hic.anno.list, function(gr) {
+    gr %>%
+        as.data.frame() %>%
+        select(transition, feature) %>%
+        dplyr::filter(transition == "A to B Transition" | transition == "B to A Transition") %>%
+        select(feature) %>%
+        deframe() %>%
+        unique()
+})
+names(intersect.windows) <- unname(hic.names)
+venn.windows <- ggvenn(intersect.windows, text_size = 3, fill_color = c("orange", unname(col.vec[2])), 
+                       fill_alpha = 0.3, set_name_size = 3) +
+                    scale_x_discrete(labels = c("Pancreatic System", "786 ccRCC System"))
+
+fraction.windows <- lapply(hic.anno.list, function(gr) {
+    df <- as.data.frame(gr)
+    total.features <- length(unique(df$feature))
+    switch.comp <- df %>%
+                    dplyr::filter(transition == "A to B Transition" | transition == "B to A Transition") %>%
+                    select(feature) %>%
+                    deframe() %>%
+                    unique() %>%
+                    length()
+    within.comp <- total.features - switch.comp
+    return(c(switch.comp / total.features, within.comp / total.features))
+})
+fraction.df <- data.frame(comp = purrr::reduce(fraction.windows, c),
+                          transition = rep(c("Between Compartment", "Within Compartment"), times = length(fraction.windows)),
+                          line = rep(unname(hic.names), each = length(fraction.windows)))
+
+bar.plot <- ggplot(data = fraction.df, aes(x = line, y = comp, fill = transition)) +
+                    geom_bar_pattern(
+                        stat = "identity",
+                        aes(pattern = transition),
+                        color = "black",
+                        pattern_fill = "black",
+                        pattern_angle = 45,
+                        pattern_density = 0.1,
+                        pattern_spacing = 0.03,
+                        width = 0.5
+                    ) +
+                    scale_pattern_manual(values = c("stripe", "none")) +
+                    scale_fill_manual(values = c("white", "black")) +
+                    theme_cowplot(font_size = 8) +
+                    theme(legend.title=element_blank(),
+                          legend.position = "top",
+                          legend.box = "horizontal",
+                          aspect.ratio = 1.5 / 1) + # Removes legend title
+                    labs(x = "Cell Line", y = "% of differentially compartmentalized genes") +
+                    scale_color_manual(values = c("black", "white"))
+
+# Save plots
+density.grid <- cowplot::plot_grid(plotlist = pdensity.list, nrow = 2, ncol = 1, labels = "AUTO")
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/comp_genelfc_density.pdf", height = 10, width = 8)
+density.grid
+dev.off()
+
+
+bp.genexp.comp <- plot_grid(plotlist = compexp.plots, labels = "AUTO", ncol = 1)
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compartment_expr.pdf", height = 11, width = 8)
+bp.genexp.comp
+dev.off()
+
+plots.together <- plot_grid(plotlist = list(compexp.plots[[1]], pdensity.list[[1]],
+                                            compexp.plots[[2]], pdensity.list[[2]]),
+                            nrow = 2,
+                            ncol = 2,
+                            labels = "AUTO",
+                            hjust = c(-0.5, -0.5, -0.5, 0))
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compartment_expr_combined.pdf", height = 7, width = 10)
+plots.together
+dev.off()
+
+hic.summary <- plot_grid(plotlist = append(x = percent.change, values = list(venn.windows, bar.plot)),
+                         nrow = 2, ncol = 2,
+                         labels = "AUTO")
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/hic_summary.pdf")
+hic.summary
+dev.off()
