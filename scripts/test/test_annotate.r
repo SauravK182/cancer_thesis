@@ -18,7 +18,7 @@ upsetplot(test.seek.anno, vennpie = TRUE)
 
 # Test with ChIPpeakAnno
 require(ChIPpeakAnno)
-test.anno <- annotatePeakInBatch(dba.report(rod.chip[[3]][[1]]),        # results for M1A vs. O
+test.anno <- annotatePeakInBatch(dba.report(rod.chip[[3]][[2]]),        # results for M1A vs. O
                                  AnnotationData = TSS.human.GRCh37,     # seems to work with the TSS GRCh37 data
                                  output = "nearestBiDirectionalPromoter",
                                  bindingRegion = c(-2000, 2000))
@@ -48,15 +48,18 @@ require(clusterProfiler)
 library(R.utils)
 R.utils::setOption("clusterProfiler.download.method","auto")
 # keep getting no hits with test.anno.up
-rod.786.kegg <- enrichKEGG(gene = test.anno.up, # genes need to be in EntrezID!
+rod.786.kegg <- enrichKEGG(gene = unname(test.anno.up[!is.na(test.anno.up)]), # genes need to be in EntrezID!
                            pvalueCutoff = 0.05,
+                           keyType = "ncbi-geneid",
                            pAdjustMethod = "BH")
 
 rod.786.kdown <- enrichKEGG(gene = test.anno.down)
 dotplot(rod.786.kdown)
 
 # Try GO term analysis - also null
-rod.786.go <- enrichGO(gene = test.anno.up,
-                       keyType = "ENTREZID",
+test.anno.up <- test.anno[test.anno$Fold < 0, ]$feature
+rod.786.go <- clusterProfiler::enrichGO(gene = test.anno.up,
+                       keyType = "ENSEMBL",
+                       pvalueCutoff = 0.1,
                        OrgDb = org.Hs.eg.db,
-                       ont = "BP")
+                       ont = "MF")

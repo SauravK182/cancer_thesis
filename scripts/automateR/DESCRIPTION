@@ -30,6 +30,7 @@ Depends:
     plyr,
     msigdbr,
     org.Hs.eg.db,
+    BSDA,
 Suggests: 
     knitr,
     rmarkdown

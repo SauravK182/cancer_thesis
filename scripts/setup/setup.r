@@ -34,3 +34,10 @@ n <- length(dge.list.full)
 col.vec <- viridis_pal(option = "C")(n)
 names(col.vec) <- names(dge.list.full)
 # pie(rep(1, n), col = col.vec)
+
+# Names
+names.comp <- c("Pancreatic System",
+                "786 ccRCC System",
+                "OS ccRCC System",
+                "BrM2 Brain vs. Primary",
+                "LM2 Lung vs. Primary")

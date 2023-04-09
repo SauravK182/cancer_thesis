@@ -1,5 +1,6 @@
 # Set up GSEA list
 gsea.list <- lapply(dge.list.full, prepare_gsea)
+names(gsea.list) <- names.comp
 
 # HALLMARK GSEA RESULTS
 hallmark <- msigdbr(species = "Homo sapiens", category = "H") %>%
@@ -12,9 +13,14 @@ dotplot_compareClusterResult_gsea(hallmark.compare, showCategory = 50)
 
 #------Save hallmark gsea results--------
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/rna_gsea_hallmark.pdf",
-          width = 10,
-          height = 8)
-dotplot_compareClusterResult_gsea(hallmark.compare, showCategory = 50)
+          width = 9,
+          height = 10)
+dotplot_compareClusterResult_gsea(hallmark.compare, showCategory = 50) +
+    theme(axis.text.y = element_text(size = 9),
+          axis.text.x = element_text(size = 9,
+                                     angle = 30,
+                                     hjust = 1,
+                                     vjust = 1))
 dev.off()
 
 # CELL TYPE GSEA RESULTS

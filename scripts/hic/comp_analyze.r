@@ -282,18 +282,40 @@ bar.plot <- ggplot(data = fraction.df, aes(x = line, y = comp, fill = transition
                     labs(x = "Cell Line", y = "% of differentially compartmentalized genes") +
                     scale_color_manual(values = c("black", "white"))
 
-# Save plots
+
+
+# Gene ontology analysis
+btoa.genes <- lapply(hic.anno.list, function(gr) {
+    gr %>%
+        as.data.frame() %>%
+        filter(transition == "B to A Transition") %>%
+        select(feature) %>%
+        deframe() %>%
+        unique()
+})
+names(btoa.genes) <- unname(hic.names)
+
+hic.go <- automateR::compareCluster(geneClusters = btoa.genes,
+                                    fun = "enrichGO",
+                                    keyType = "ENSEMBL",
+                                    OrgDb = org.Hs.eg.db,
+                                    pvalueCutoff = 0.1,
+                                    ont = "MF")
+
+#------SAVE PLOTS--------
+# Density plot
 density.grid <- cowplot::plot_grid(plotlist = pdensity.list, nrow = 2, ncol = 1, labels = "AUTO")
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/comp_genelfc_density.pdf", height = 10, width = 8)
 density.grid
 dev.off()
 
-
+# Boxplots
 bp.genexp.comp <- plot_grid(plotlist = compexp.plots, labels = "AUTO", ncol = 1)
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compartment_expr.pdf", height = 11, width = 8)
 bp.genexp.comp
 dev.off()
 
+# Combined boxplots w/ density plots side-by-side
 plots.together <- plot_grid(plotlist = list(compexp.plots[[1]], pdensity.list[[1]],
                                             compexp.plots[[2]], pdensity.list[[2]]),
                             nrow = 2,
@@ -304,9 +326,17 @@ cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compartment_expr_combined
 plots.together
 dev.off()
 
+
+# Hi-C summary stats
 hic.summary <- plot_grid(plotlist = append(x = percent.change, values = list(venn.windows, bar.plot)),
                          nrow = 2, ncol = 2,
                          labels = "AUTO")
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/hic_summary.pdf")
 hic.summary
+dev.off()
+
+# Molecular function GO term results
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compart_go.pdf", height = 15, width = 10)
+clusterProfiler::dotplot(hic.go, showCategory = 20) +
+    theme(axis.text.y = element_text(size = 5))
 dev.off()

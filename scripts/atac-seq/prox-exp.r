@@ -116,7 +116,26 @@ ggplot.list <- lapply(seq_len(length(atac.chip.df.melted)), function(i) {
     return(bplot)
 })
 
-# Use plot_grid and save the plots
+# GO term analysis
+increase.atac <- lapply(anno.atac.list.full, function(gr) {
+    gr %>%
+        as.data.frame() %>%
+        filter(Fold > 3) %>%
+        select(feature) %>%
+        deframe() %>%
+        unique()
+})
+names(increase.atac) <- ggnames
+
+atac.go <- automateR::compareCluster(geneClusters = increase.atac,
+                                     fun = "enrichGO",
+                                     keyType = "ENSEMBL",
+                                     OrgDb = org.Hs.eg.db,
+                                     pvalueCutoff = 0.1,
+                                     ont = "MF")
+
+
+#-----SAVE PLOTS--------
 arranged.plots <- cowplot::plot_grid(
     cowplot::plot_grid(ggplot.list[[1]], ggplot.list[[2]], nrow = 1, ncol = 2, labels = "AUTO"),
     cowplot::plot_grid(NULL, ggplot.list[[3]], NULL, rel_widths = c(0.5, 1, 0.5), nrow = 1, labels = "C", hjust = -13),
@@ -124,6 +143,13 @@ arranged.plots <- cowplot::plot_grid(
 )
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/atac_chip_comp.pdf")
 arranged.plots
+dev.off()
+
+# Save GO term analysis plot
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/atac_lfc3_go.pdf", height = 10, width = 8)
+clusterProfiler::dotplot(atac.go, showCategory = 15) +
+    theme(axis.text.x = element_text(size = 9),
+          axis.text.y = element_text(size = 8))
 dev.off()
 
 # Note that p-value for Brain vs. Primary of both vs h3k27ac is 0.04359

@@ -4,12 +4,14 @@
 \alias{signifDE}
 \title{Isolate DGE genes}
 \usage{
-signifDE(results, threshold = 0.05)
+signifDE(results, threshold = 0.05, lfc = 0)
 }
 \arguments{
 \item{results}{Object produced by a call to \code{results} or \code{lfcShrink} in \code{DESeq2}}
 
 \item{threshold}{FDR-adjusted p-value threshold. Only genes below this threshold will be kept. Default: 0.05.}
+
+\item{lfc}{Log-fold change minimum to be imposed to extract DE genes. Default = 0 (i.e., no threshold)}
 }
 \value{
 Subset of the \code{results} object, containing only genes below the user-defined threshold.

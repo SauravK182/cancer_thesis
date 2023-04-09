@@ -59,6 +59,9 @@ setClass("ProximalGeneExp", representation = representation(
 
 setGeneric(name = "intersect_prox", def = function(obj1, obj2, type = "") standardGeneric("intersect_prox"))
 
+
+
+#' @export
 setMethod(
           f = "intersect_prox",
           signature = "ProximalGeneExp",
@@ -90,6 +93,53 @@ setMethod(
                 remove_rownames() %>%
                 column_to_rownames(var = "Row.names")
             })
-            
+
             return(merged.df)
 })
+
+setGeneric(name = "get_proximal_genes", def = function(ranges, deseqObject, minlfc = 0, maxlfc = Inf) standardGeneric("get_proximal_genes"))
+
+
+#' @export
+setMethod(
+          f = "get_proximal_genes",
+          signature = c("GRanges", "DESeqResults"),
+          definition = function(ranges, deseqObject, minlfc = 0, maxlfc = Inf) {
+              # Get up/down changing features
+              anno.up <- ranges[ranges$Fold > minlfc & ranges$Fold < maxlfc, ]
+              anno.down <- ranges[ranges$Fold < -minlfc & ranges$Fold > -maxlfc, ]
+              anno.up.features <- anno.up$feature
+              anno.down.features <- anno.down$feature
+
+              # Subset DESeq2 results object to isolate these features in particular
+              anno.up.subset <- intersect(anno.up.features, rownames(deseqObject))
+              anno.down.subset <- intersect(anno.down.features, rownames(deseqObject))
+              gene.anno.up <- deseqObject[anno.up.subset, ] %>%
+                as.data.frame() %>%
+                select(log2FoldChange)
+              gene.anno.down <- deseqObject[anno.down.subset, ] %>%
+                as.data.frame() %>%
+                select(log2FoldChange)
+
+              # Calculate intersection stats
+              upreg.int <- length(anno.up.subset) / length(anno.up.features)
+              downreg.int <- length(anno.down.subset) / length(anno.down.features)
+              total.int <- length(anno.up.subset) + length(anno.down.subset)
+
+              # Calculate sign test for median > 0 or median < 0
+              binomUp <- BSDA::SIGN.test(x = gene.anno.up$log2FoldChange, md = 0, alternative = "greater")$p.value
+              binomDown <- BSDA::SIGN.test(x = gene.anno.down$log2FoldChange, md = 0, alternative = "less")$p.value
+
+              # Instantiate ProximalGeneExp class and return
+              pge.obj <- new("ProximalGeneExp",
+                             upregProx = gene.anno.up,
+                             downregProx = gene.anno.down,
+                             upregIntPercent = upreg.int,
+                             downregIntPercent = downreg.int,
+                             totalIntersect = total.int,
+                             totalGenes = length(rownames(deseqObject)),
+                             binomTestUp = binomUp,
+                             binomTestDown = binomDown)
+              return(pge.obj)
+          }
+)
