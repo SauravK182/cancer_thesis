@@ -163,13 +163,13 @@ for KEY in ${!PAIRS[@]}; do
     --output-file "${OUTDIR}${KEY}" \
     -i $IDR_VAL \
     --plot 2> "${OUTDIR}${KEY}.log"
-    # Extract first 3 BED cols
-    cut -f 1,2,3 "${OUTDIR}${KEY}" > "${OUTDIR}${KEY}.bed"
+    # Extract first 3 BED cols and peak summit (10th col)
+    cut -f 1,2,3,10 "${OUTDIR}${KEY}" > "${OUTDIR}${KEY}.bed"
 done
 
-# Run bedtools intersect to get peaks specific to the treatments
+# Run bedtools intersect to get peaks specific to the treatments, grab 200 bp window around summit for motif analysis
 for TREAT in "${TREATMENTS[@]}"; do
-    bedtools intersect -v -a "${OUTDIR}${TREAT}.bed" -b "${OUTDIR}${CONTROL}.bed" > "${OUTDIR}${TREAT}_unique.bed"
+    bedtools intersect -v -a "${OUTDIR}${TREAT}.bed" -b "${OUTDIR}${CONTROL}.bed" | awk '{ print $1, $2+$4-100, $2+$4+100 }' OFS='\t' > "${OUTDIR}${TREAT}_unique.bed"
 done
 
 # If user supplied genome FASTA file, get the associated DNA sequences for the unique peaks
