@@ -289,7 +289,7 @@ btoa.genes <- lapply(hic.anno.list, function(gr) {
     gr %>%
         as.data.frame() %>%
         filter(transition == "B to A Transition") %>%
-        select(feature) %>%
+        dplyr::select(feature) %>%
         deframe() %>%
         unique()
 })
@@ -336,7 +336,15 @@ hic.summary
 dev.off()
 
 # Molecular function GO term results
-cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compart_go.pdf", height = 15, width = 10)
-clusterProfiler::dotplot(hic.go, showCategory = 20) +
-    theme(axis.text.y = element_text(size = 5))
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/compart_go.pdf", height = 10, width = 8)
+# Hand-picked clusters of interest
+hic.clusters.indices <- c(2, 7, 18, 19, 20, 25, 27, 29, 30, 35, 36, 40, 41)
+hic.clusters <- c(hic.go@compareClusterResult$Description[hic.clusters.indices],
+                  "transforming growth factor beta binding",
+                  "ion channel activity",
+                  "ionotropic glutamate receptor activity",
+                  "ligand-gated ion channel activity",
+                  "calcium channel activity")
+# Guanyl ribonucleotide binding proteins includes RHOT1/RAB3C/RAB27B, members of RAS family
+clusterProfiler::dotplot(hic.go, showCategory = hic.clusters)
 dev.off()

@@ -48,7 +48,7 @@ help() {
     echo "  -w | --bigwigdir        Directory of .bw files for computeMatrix. Mutually exclusive with -b."
     echo "  -o | --outdir           Directory for output files of bamCoverage and/or computeMatrix."
     echo "  -r | --bedfile          BED file required for computeMatrix - if not passed, this will not be run."
-    echo "  -f | --outname          Outfile name for computeMatrix file. Not required if -b not specified."
+    echo "  -f | --outname          Outfile name for computeMatrix file. Not required if -r not specified."
     echo "  -a | --atac             Indicates no input controls => bamCoverage is run instead of bamCompare. Default = off."
     echo "  -n | --normalization    Normalization strategy to use. Default is BPM."
     echo "  -s | --binsize          Bin size to use for read density calculation. Default is 50."
@@ -213,8 +213,7 @@ if [ ! -z $BAMDIR ]; then
             --extendReads $EXTSIZE \
             --centerReads \
             -p $THREADS \
-            --scaleFactorsMethod None 2> "${OUTPUTDIR}${FILENAME}.log"
-            echo -e "Done!\n"
+            --scaleFactorsMethod None 2> "${OUTPUTDIR}${FILENAME}.log" && echo -e "Done!\n"
             done
         done
     else
@@ -227,26 +226,23 @@ if [ ! -z $BAMDIR ]; then
             -o "${OUTPUTDIR}${FILENAME}.bw" \
             --binSize $BINSIZE \
             --normalizeUsing "$NORMALIZE" \
-            -p $THREADS \
-            --scaleFactorsMethod None 2> "${OUTPUTDIR}${FILENAME}.log"
-            echo -e "Done!\n"
+            -p $THREADS 2> "${OUTPUTDIR}${FILENAME}.log" && echo -e "Done!\n"
         done
     fi
 fi
 
 # If bedfile is passed, run computeMatrix
 if [ ! -z $BEDFILE ]; then
-    if [ -z $BIGWIGDIR ] && [ ! -z $BAMDIR ]; then
-        BIGWIGDIR=$OUTPUTDIR
+    if [ -z $BWDIR ] && [ ! -z $BAMDIR ]; then
+        BWDIR=$OUTPUTDIR
     fi
-    BWFILES=$BIGWIGDIR*.bw
+    BWFILES=$BWDIR*.bw
     echo "Now running computeMatrix with TSSs defined in $BEDFILE."
     computeMatrix reference-point --referencePoint TSS \
     -S $BWFILES \
     -b $WINDOW -a $WINDOW \
     -R $BEDFILE \
     --skipZeros \
-    -o "${BIGWIGDIR}${OUTNAME}.gz" \
-    -p $THREADS
-    echo -e "Done!\n"
+    -o "${BWDIR}${OUTNAME}.gz" \
+    -p $THREADS && echo -e "Done!\n"
 fi

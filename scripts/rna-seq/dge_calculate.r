@@ -67,10 +67,16 @@ dge.list.full <- list(panc = capan.panc,
                       brain_mb = brain.vs.primary,
                       lung_mb = lung.vs.primary)
 
-dge.list.signif <- lapply(dge.list.full, signifDE)
-dge.list.signif.ens <- lapply(dge.list.signif, rownames)
-dge.list.signif.hgnc <- lapply(dge.list.signif.ens, ensembl_to_gene)
-signif.univ.ens <- purrr::reduce(dge.list.signif.ens, intersect)
+dge.list.signif <- lapply(dge.list.full, function(df) signifDE(df) %>% rownames())
+signif.univ.ens <- purrr::reduce(dge.list.signif, intersect)
+
+# Make & save Upset plot for visualizing intersections
+names(dge.list.signif) <- c("Pancreatic", "786 ccRCC", "OS ccRCC", "BrM2-Breast", "LM2-Breast")
+
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/upset_intersections.pdf")
+UpSetR::upset(fromList(dge.list.signif),
+              sets.bar.color = "#56B4E9")
+dev.off()
 
 # Get upregulated and downregulated genes for each experiment
 dge.list.upreg <- lapply(dge.list.full, function(df) splitDE(df)[[1]])
@@ -79,7 +85,22 @@ dge.list.upreg.ens <- lapply(dge.list.upreg, rownames)
 dge.list.downreg.ens <- lapply(dge.list.downreg, rownames)
 
 
+# Run GO term analysis for the 181 universally misregulated genes
+# Only 4 terms found - nothing seemingly important other than PI3K binding
+univ.reg.go <- enrichGO(gene = signif.univ.ens,
+                        keyType = "ENSEMBL",
+                        OrgDb = org.Hs.eg.db,
+                        ont = "MF",
+                        pvalueCutoff = 0.10)
+pi3k.binding <- univ.reg.go@result["GO:0043548", "geneID"] %>% strsplit(split = "/")
+pi3k.binding.hgnc <- ensembl_to_gene(unlist(pi3k.binding))
 
+# PI3K binding list: 
+# FYN, member of the SRC non-receptor protein Tyr kinases
+# Gelsolin, actin-binding protein that regulates actin assembly/disassembly
+# IGF1R - insulin like growth factor 1 receptor
+# PI3KIP1 - PI3K interacting protein 1
+# RASD2 - RASD family member 2
 
 #-------MAKING HEATMAP--------
 full.df <- lapply(list(featurecounts.ren, featurecounts.rod, featurecounts.cai), txt2counts) %>%
@@ -87,16 +108,29 @@ full.df <- lapply(list(featurecounts.ren, featurecounts.rod, featurecounts.cai),
                 merge(df1, df2, by = 0, all = TRUE) %>%
                 column_to_rownames(var = "Row.names")
             })
-des.mat <- data.frame(Culture = c(rep(c("capan", "hpne", "panc"), each = 3),
-                                  rep(c("m1a", "o", "lm1", "rc2"), each = 2),
-                                  rep(c("mdamb", "lm", "br"), each = 3)),
-                      Lab = c(rep("lab1", times = 9),
-                              rep("lab2", times = 8),
-                              rep("lab3", times = 9)))
-dds <- DESeqDataSetFromMatrix(countData = full.df, colData = des.mat, design = ~ Culture)
-full.dge <- DESeq(dds)
-full.counts <- counts(full.dge, normalized = TRUE)
 
+# Estimate TPM values using biomaRt - see https://www.biostars.org/p/9534603/ for code/explanation
+# Retrieve Ensembl genes, transcript length, and CDS length
+library(biomaRt)
+ensembl <- useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+gene_lengths <- getBM(attributes=c('ensembl_gene_id', 'ensembl_transcript_id', 'transcript_length','cds_length'),
+                      filters =  'ensembl_gene_id', values = rownames(full.df), mart = ensembl, useCache = FALSE)
+
+# Retrieve list of canonical transcripts for each gene - will serve as representative transcripts
+gene_canonical_transcript <- getBM(attributes=c('ensembl_gene_id','ensembl_transcript_id','transcript_is_canonical'), 
+                                                filters =  'ensembl_gene_id', 
+                                                values = rownames(full.df), mart = ensembl, useCache = FALSE)
+
+# Retain only canonical transcripts
+gene_canonical_transcript_subset <- gene_canonical_transcript[!is.na(gene_canonical_transcript$transcript_is_canonical), ]
+
+# Merge gene_lengths and canonical_transcript df by Ensembl ID and transcript ID to map canonical transcript to length
+gene_lengths <- merge(gene_canonical_transcript_subset, gene_lengths, by = c("ensembl_gene_id", "ensembl_transcript_id"))
+
+# Calculate TPM for each column
+full.df <- full.df[gene_lengths$ensembl_gene_id, ]
+full.df <- full.df / gene_lengths$transcript_length
+full.df <- t( t(full.df) * 1e6 / colSums(full.df) )
 # Create Heatmap annotation
 # See https://www.biostars.org/p/317349/
 ann <- data.frame("Cell Line" = c(rep("Capan-1", 3),
@@ -148,23 +182,26 @@ colAnno <- HeatmapAnnotation(df = ann,
                              gap = unit(1, "mm"))
 
 # z-score counts within sample and plot on Heatmap
-heatmap.all <- t(apply(full.counts, 1, scale)) %>%
+# use log(tpm + 0.001) since tpm is supposedly log normal, add pseudocount to avoid log(0)
+log.tpm <- log(full.df + 0.01, base = 2)
+heatmap.all <- t(apply(log.tpm, 1, scale)) %>%
                 na.omit() %>%
-                Heatmap(cluster_rows = TRUE, cluster_columns = TRUE, show_column_names = FALSE,
-                        name = "Z-score", show_row_names = FALSE,
+                Heatmap(cluster_rows = TRUE, cluster_columns = FALSE, show_column_names = FALSE,
+                        name = "Z-score", show_row_names = FALSE, show_row_dend = FALSE,
                         top_annotation = colAnno)
-save(heatmap.all, file = "C:/Users/jvons/Documents/NCF/Thesis/scripts/rna-seq/gene_all_heatmap.RData")
+# save(heatmap.all, file = "C:/Users/jvons/Documents/NCF/Thesis/scripts/rna-seq/gene_all_heatmap.RData")
 
 # Save heatmap
-cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/gene_all_zacrossexp.pdf")
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/gene_tpm_zbygene_nocluster.pdf")
 heatmap.all
 dev.off()
 
 # Take only genes DE in at least one comparison
 de.genes <- lapply(dge.list.full, signifDE, lfc = 1) %>%
                 lapply(function(deseq) rownames(as.data.frame(deseq))) %>%
-                purrr::reduce(union)
-heatmap.lfc1 <- t(apply(full.counts[de.genes, ], 1, scale)) %>%
+                purrr::reduce(union) %>%
+                intersect(rownames(log.tpm))
+heatmap.lfc1 <- t(apply(log.tpm[de.genes, ], 1, scale)) %>%
                     na.omit() %>%
                     Heatmap(cluster_rows = TRUE, cluster_columns = TRUE, show_column_names = FALSE,
                             name = "Z-score", show_row_names = FALSE, show_row_dend = FALSE,
@@ -179,8 +216,9 @@ dev.off()
 # Create heatmap for LFC >= 2
 de.genes <- lapply(dge.list.full, signifDE, lfc = 2) %>%
                 lapply(function(deseq) rownames(as.data.frame(deseq))) %>%
-                purrr::reduce(union)
-heatmap.lfc2 <- t(apply(full.counts[de.genes, ], 1, scale)) %>%
+                purrr::reduce(union) %>%
+                intersect(rownames(log.tpm))
+heatmap.lfc2 <- t(apply(log.tpm[de.genes, ], 1, scale)) %>%
                     na.omit() %>%
                     Heatmap(cluster_rows = TRUE, cluster_columns = TRUE, show_column_names = FALSE,
                             name = "Z-score", show_row_names = FALSE, show_row_dend = FALSE,
