@@ -40,7 +40,7 @@ bplot.list <- lapply(seq_len(length(melted.df.list)), function(i) {
                 annotate("text",
                          x = seq_len(ncol(merged.df.list[[i]])),
                          y = sapply(merged.df.list[[i]], function(x) max(x[!is.na(x)]) + 1),
-                         size = 8,
+                         size = 7,
                          label = "***") +
                 scale_fill_manual(values = unname(col.vec))
 })
@@ -52,6 +52,13 @@ dev.off()
 
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_all_binom_down.pdf")
 bplot.list[[2]]
+dev.off()
+
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/k27_both_directions.pdf", height = 10, width = 6)
+# Remove x-labels of first plot since they're redundant
+bplot.up.noname <- bplot.list[[1]] + theme(axis.text.x = element_blank())
+cowplot::plot_grid(plotlist = list(bplot.up.noname, bplot.list[[2]]), ncol = 1, nrow = 2, labels = "AUTO",
+                   rel_heights = c(0.70, 1))
 dev.off()
 
 #------PLOT STRATIFIED BY H3K27AC LFC------

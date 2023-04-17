@@ -4,7 +4,7 @@
 # Author: Saurav Kiri
 # Date last modified: 2023-04
 # Description: Runs MEME-ChIP and TomTom on identified enrichment sites to discover TF binding motifs.
-# Dependencies: MEME Suite Software
+# Dependencies: MEME Suite Software, TeXLive epstopdf
 # Type bash run_meme_chip.sh --h (or --help) to see list of all options
 #########################
 
@@ -39,6 +39,7 @@ help() {
     echo "2) You wish to call E-values (proportion of motifs with equal or greater log-odds ratio given a background) at 0.05"
     echo "3) You want to use the di-nucleotide permuted background rather than a normal background"
     echo "4) You have a single database file (e.g., a JASPAR .meme file)."
+    echo "Script also produces .eps logo plots and converts the .eps to .pdf files with TeXLive's epstopdf."
     echo 
     echo
     echo "Arguments (optional arguments in [brackets] above):"
@@ -99,4 +100,5 @@ if $OVERWRITE; then DIRTYPE=-oc; else DIRTYPE=-o; fi
 echo "Starting MEME-ChIP on $FASTA.."
 meme-chip $DIRTYPE $OUTPUTDIR $FASTA && \
 echo "Done. Starting TomTom analysis." && \
-tomtom -o ${OUTPUTDIR}/tomtom/ ${OUTPUTDIR}/combined.meme $DATABASE
+tomtom -o ${OUTPUTDIR}/tomtom/ ${OUTPUTDIR}/combined.meme $DATABASE -eps && \
+for FILE in ${OUTPUTDIR}/tomtom/*.eps; do epstopdf $FILE; done      # Convert eps to pdf

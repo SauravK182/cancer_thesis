@@ -25,11 +25,6 @@ tryCatch(
     }
 )
 
-# Source necessary files
-load(file.path(scripts.dir, "rna-seq/dge.RData"))
-load(file.path(scripts.dir, "chip-seq/chip-dba.RData"))
-load(file.path(scripts.dir, "atac-seq/atac-dba.RData"))
-
 # Colors for plotting
 n <- length(dge.list.full)
 col.vec <- viridis_pal(option = "C")(n)
@@ -42,3 +37,8 @@ names.comp <- c("Pancreatic System",
                 "OS ccRCC System",
                 "BrM2 Brain vs. Primary",
                 "LM2 Lung vs. Primary")
+
+# Source necessary files
+load(file.path(scripts.dir, "rna-seq/dge.RData"))
+load(file.path(scripts.dir, "chip-seq/chip-dba.RData"))
+load(file.path(scripts.dir, "atac-seq/atac-dba.RData"))

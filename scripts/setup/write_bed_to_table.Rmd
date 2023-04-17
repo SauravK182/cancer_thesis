@@ -1,0 +1,31 @@
+---
+title: ""
+author: ""
+date: ''
+output: pdf_document
+---
+
+```{r, include = FALSE}
+# Read in file & get the description from biomaRt
+require(biomaRt)
+require(stargazer)
+require(dplyr)
+mart <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "grch37.ensembl.org")
+bed.file <- read.table("D:/SK/data/pluri_wnt_genes.bed",
+                       col.names = c("Chromosome", "Start", "End", "Gene", "Strand"))
+descriptions <- getBM(attributes = c("external_gene_name", "description"),
+                      filters = "external_gene_name",
+                      values = bed.file$Gene,
+                      mart = mart,
+                      useCache = FALSE)
+descriptions$description <- gsub(pattern = "\\[.*\\]", replacement = "", descriptions$description)
+colnames(descriptions) <- c("Gene", "Description")
+
+# Merge the genes with descriptions to add descriptions to gene names
+merged.genes <- merge(bed.file, descriptions, by = "Gene")
+```
+
+```{r, echo = FALSE}
+# Write table
+stargazer(dplyr::select(merged.genes, Gene, Description), rownames = FALSE, summary = FALSE, digit.separate = 0)
+```

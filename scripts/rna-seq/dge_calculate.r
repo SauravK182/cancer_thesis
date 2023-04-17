@@ -228,3 +228,48 @@ heatmap.lfc2 <- t(apply(log.tpm[de.genes, ], 1, scale)) %>%
 cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/gene_z_lfcthreshold_2.pdf")
 heatmap.lfc2
 dev.off()
+
+
+# Get Ensembl IDs for pluripotency/Wnt genes
+pluri.table <- read.table("D:/SK/data/pluri_wnt_genes.bed",
+                          col.names = c("Chromosome", "Start", "End", "Gene", "Strand"))
+pluri.genes <- pluri.table$Gene
+pluri.ens <- getBM(attributes = c("external_gene_name", "ensembl_gene_id"), 
+                   filters = "external_gene_name",
+                   values = pluri.genes,
+                   mart = ensembl,
+                   useCache = FALSE)
+
+# Make heatmap of overall expression profiles
+valid.ens <- intersect(pluri.ens$ensembl_gene_id, rownames(log.tpm))
+wnt.pluri.df <- log.tpm[valid.ens, ]
+wnt.pluri.heatmap <- t(apply(wnt.pluri.df, 1, scale)) %>%
+                        na.omit() %>%
+                        Heatmap(cluster_rows = FALSE, cluster_columns = TRUE, show_column_names = FALSE,
+                                name = "Z-score", show_row_names = FALSE, top_annotation = colAnno)
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/wnt_pluri_heatmap.pdf")
+wnt.pluri.heatmap
+dev.off()
+
+# Create heatmaps for each dge object as well
+dge.obj.list <- list(panc = counts(ren.dge[[2]], normalize = TRUE),
+                     kidney = counts(dge.rod[[2]], normalize = TRUE),
+                     breast = counts(dge.cai[[2]], normalize = TRUE))
+dge.labels <- list(panc = panc.labels <- ann[1:9, 1],
+                   kidney = ann[10:17, 1],
+                   breast = ann[18:nrow(ann), 1])
+
+heatmaps <- lapply(names(dge.obj.list), function(name) {
+        counts.df <- dge.obj.list[[name]]
+        pluri.counts <- counts.df[intersect(valid.ens, rownames(counts.df)), ]
+        show_legend <- name == "breast"
+        t(apply(pluri.counts, 1, scale)) %>%
+                Heatmap(cluster_rows = TRUE, cluster_columns = TRUE,
+                        show_row_names = FALSE, show_row_dend = FALSE,
+                        column_labels = dge.labels[[name]], show_heatmap_legend = show_legend,
+                        name = "Z-score")
+})
+cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/heatmaps_split_wnt.pdf")
+cowplot::plot_grid(plotlist = lapply(heatmaps, function(x) grid.grabExpr(draw(x))), nrow = 1, labels = "AUTO",
+                   rel_widths = c(0.75, 0.75, 1))
+dev.off()

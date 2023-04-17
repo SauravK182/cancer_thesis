@@ -116,10 +116,10 @@ setMethod(
               anno.down.subset <- intersect(anno.down.features, rownames(deseqObject))
               gene.anno.up <- deseqObject[anno.up.subset, ] %>%
                 as.data.frame() %>%
-                select(log2FoldChange)
+                dplyr::select(log2FoldChange)
               gene.anno.down <- deseqObject[anno.down.subset, ] %>%
                 as.data.frame() %>%
-                select(log2FoldChange)
+                dplyr::select(log2FoldChange)
 
               # Calculate intersection stats
               upreg.int <- length(anno.up.subset) / length(anno.up.features)
