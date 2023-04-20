@@ -2,7 +2,6 @@ library(automateR)  # custom package
 library(cowplot)
 library(ggsignif)
 library(viridis)
-library(memes)
 
 # Set up data directories
 main.data.dir <- "D:/SK/data"

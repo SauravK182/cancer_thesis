@@ -127,7 +127,7 @@ hic.barplot <- ggplot(data = hic.df, aes(x = variable, y = value, fill = keep_le
                 scale_y_continuous(expand = c(0, 0))
 
 #----------SAVE PLOT----------
-plotlist <- list(pluri.dge.bar, epi.plots[[1]], epi.plots[[2]], hic.barplot)
-cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/wnt_pluri_combined.pdf", height = 9, width = 6)
-cowplot::plot_grid(plotlist = plotlist, ncol = 1, labels = "AUTO")
-dev.off()
+# plotlist <- list(pluri.dge.bar, epi.plots[[1]], epi.plots[[2]], hic.barplot)
+# cairo_pdf("C:/Users/jvons/Documents/NCF/Thesis/Reports/wnt_pluri_combined.pdf", height = 9, width = 6)
+# cowplot::plot_grid(plotlist = plotlist, ncol = 1, labels = "AUTO")
+# dev.off()

@@ -1,37 +1,51 @@
-# README
+# Folder Organization
 
-This file contains information regarding documentation of certain scripts used in this thesis. Shell scripts have self-contained documentation, and you may refer to the file headers for such information on usage.
+## atac-seq
+Contains scripts to:
+* Align ATAC-seq reads, apply blacklists, deplete chrM reads
+* Perform ATAC-seq shifts (if desired, as done by Buenrostro et al. (2013))
+* Compute ATAC-seq peaks in 1 of 2 ways:
+  1. Call ATAC-seq fragment pileup peaks (option `--broad` in MACS2)
+  2. Call ATAC-seq cutsites (using `--shift` and `--extsize` in MACS2)
+* Collapse ATAC-seq replicates with IDR
+* Find enriched motifs in peaks using MEME-ChIP and TomTom
+* R scripts to investigate expression changes proximal to differential changes in H3K27ac
 
-## dge-analysis.r Documentation
 
-### txt2counts()
+## automateR
+Contains source code for a package consisting of some simple custom functions that automates differential expression and differential enrichment analysis performed.
 
-Reads a featurecounts txt file into an R data frame
-Requires:
+## chip-seq
+Contains scripts to:
+* Align ChIP-seq reads to human genome and apply necessary blacklists
+* Check reproducibility of replicates by computing Pearson correlation coefficients with deepTools
+* Call ChIP-seq peaks with MACS2
+* Compute coverage density for a particular set of TSSs in a .bed file with deepTools
+* R scripts for differential enrichment, GO term analysis
 
-* featurecounts.txt: Name/path to a featurecounts count file
-    
-Return value: Flat matrix of counts
+## hic
+Contains scripts to:
+* Remove reads mapping to chrY from HiC-Pro .matrix files (was necessary for my case in order for dcHiC to successfully complete SVD of interaction maps) and convert GRCh37 chromosome names to UCSC hg19 names
+* Run dcHiC on interaction maps
+* Perform gene expression/GO term analysis on genes annotated to changing windows
 
-### dge_analysis()
-Given either A) a `featurecounts` flat text file or B) a `data frame` like object containing raw read counts, and a design matrix `coldata`, `dge_analysis` will automate the process of calling DESeq and perform all pairwise combinations of `contrasts` (by default, the levels of elements in the design matrix column corresponding to `contrast.var` - see below) for DGE hypothesis testing.
+## integrated_analysis
+Generate summary statistics for Wnt/pluripotency genes.
 
-The function (by default) will assume that all columns of the design matrix are to be used in the call to `DESeqDataSetFromMatrix`, with the order of the columns being the order of main effects. E.g., suppose that a user passes the following design matrix:
+## preprocessing
+Contains scripts to:
+* Download a set of FASTQ files from a particular SRR accession
+* Downsample FASTQ file(s) if desired
+* Generate FastQC/MultiQC summary reports from FASTQ files
+* Java script to parse BBDuk log files for the important statistics
+* Trim reads with BBDuk
 
-```
-coldata
-  Culture Type
-1     786  MET
-2     786  MET
-3     786  PRT
-4     786  PRT
-5      OS  MET
-6      OS  MET
-7      OS  PRT
-8      OS  PRT
-```
-The user may optionally pass a vector for all elements to be used in the formula for DESeq - for the formula `~ Culture + Type + Culture:Type`, one would pass `formula.vec = c("Culture", "Type", "Culture:Type")`. If no formula vector is passed to `dge_analysis()`, the function assumes that the columns of the design matrix indicate the design. Therefore, for the above `coldata`, the formula used in the function will be `Culture + Type`, searching for DGE as a main effect of Type.
+## rna-seq
+Contains scripts to:
+* Align RNA-seq data with HISAT2 and produce summary stats with RNASeQC
+* Convert a set of .bam files to flat text count files with featureCounts
+* Perform DGE analysis and produce summary MA, PCA, and volcano plots with DESeq2
+* Other downstream analysis involving gene expression (e.g., heatmap visualization, GSEA)
 
-Currently, the function only supports DGE as a main effect of a single variable (`contrast.var`), which can be passed to the function by the user, but by default it is simply the last column in `coldata`. Future support for performing pairwise DGE for multiple variables (e.g., discovering differentially expressed genes for both `786 vs. OS` and `MET vs. PET` above) will hopefully be available in the future.
-
-Additionally, this function assumes that `contrasts` are the levels of the design matrix with column name given by `contrast.var`. The levels are assumed to be in order of numerator -> ... -> denominator. In other words, given a leveling scheme of `levels = c("l1", "l2", "l3")`, `dge_analysis` will perform DGE for `l1 vs. l2`, `l1 vs. l3`, and `l2 vs. l3`. This is contradictory to how DESeq2 suggests to level, since `dge_analysis()` assumes the reference level is the "highest" level. More work to make this in-line with the DESeq2 vignette is forthcoming.
+## setup
+Setup R environment, load all packages, get pluripotency/Wnt genes, get associated .bed file.
