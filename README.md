@@ -45,6 +45,13 @@ I used a variety of pre-existing software tools to analyze ~ 3 TB of data in tot
 ## Using this Code
 This code is freely licensed under the the GNU Public License v3. A copy of this license is provided in this repository with NO WARRANTY. You are free to download, use, modify, and re-distribute all code in this GitHub. Just cite my page when you become famous.
 
+## Installing automateR
+To install my custom package `automateR`, simply download the `.tar.gz` file, open R to the directory containing the file, and type the following at the console:
+
+``` r
+install.packages("automateR_0.1.0.tar.gz", repos = NULL)
+```
+
 ## Commandline dependencies
 The following dependencies are necessary for properly running all semi-automated shell scripts:
 * [SRA Toolkit](https://github.com/ncbi/sra-tools) (optional, if downloading data programmatically)
