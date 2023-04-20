@@ -51,6 +51,8 @@ To install my custom package `automateR`, simply download the `.tar.gz` file, op
 ``` r
 install.packages("automateR_0.1.0.tar.gz", repos = NULL)
 ```
+For a full list of dependencies, see [the automateR page](scripts/automateR/).
+
 
 ## Commandline dependencies
 The following dependencies are necessary for properly running all semi-automated shell scripts:
