@@ -43,11 +43,11 @@ I used a variety of pre-existing software tools to analyze ~ 3 TB of data in tot
 * Annotate windows to genes, run GO term analysis on differentially compartmentalized genes
 
 ## Using this Code
-This code is freely licensed under the the GNU Public License v3. A copy of this license is provided in this repository. You are free to download, use, modify, and re-distribute all code in this GitHub. Just cite my page when you become famous.
+This code is freely licensed under the the GNU Public License v3. A copy of this license is provided in this repository with NO WARRANTY. You are free to download, use, modify, and re-distribute all code in this GitHub. Just cite my page when you become famous.
 
 ## Commandline dependencies
 The following dependencies are necessary for properly running all semi-automated shell scripts:
-* [SRA Toolkit](https://github.com/ncbi/sra-tools) (optional, if downloading data programmatically):
+* [SRA Toolkit](https://github.com/ncbi/sra-tools) (optional, if downloading data programmatically)
 * [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 * [Brian Bushnell's Decontamination Using K-mers (BBDuk)](https://sourceforge.net/projects/bbmap/)
 * [HISAT2](https://github.com/DaehwanKimLab/hisat2)
@@ -57,4 +57,4 @@ The following dependencies are necessary for properly running all semi-automated
 * [bedtools](https://github.com/arq5x/bedtools2)
 * [MACS2](https://github.com/macs3-project/MACS)
 * [HiC-Pro](https://github.com/nservant/HiC-Pro)
-* [dcHiC](https://github.com/ay-lab/dcHiC/blob/master/dchicf.r)
+* [dcHiC](https://github.com/ay-lab/dcHiC)
